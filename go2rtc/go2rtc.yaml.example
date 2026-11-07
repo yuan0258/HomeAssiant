@@ -21,9 +21,10 @@ streams:
   c400:
     - ffmpeg:rtsp://<RTSP_USER>:<RTSP_PASSWORD>@192.168.31.104:554/live/ch00_0#video=h264#audio=aac#width=1280#height=720#raw=-preset ultrafast -tune zerolatency
 
-  # 書房 Lollipop 嬰兒攝影機 (樺)：原生 H.264 + AAC 區網 RTSP 零 CPU 直通
-  lollipop:
-    - rtsp://192.168.31.102:554/live/<MD5_OF_CAM_SETTING_OBJECT_ID>/ch00_0
+  # 書房 Lollipop 嬰兒攝影機 (樺)：原生 720p H.264 (High Profile) + AAC (8000Hz) 區網 RTSP 零 CPU 直通
+  # 註：Lollipop 原廠韌體於 RTP payload 開頭塞入 00 00 00 01 起始碼 (產生 type=0 空 NAL)，
+  # 透過 -c:v copy -bsf:v filter_units=remove_types=0 進行零轉碼封包重整，即可完美支援 MSE 與快照擷取
+  lollipop: "exec:ffmpeg -hide_banner -v error -rtsp_transport tcp -i rtsp://192.168.31.102:554/live/<MD5_OF_CAM_SETTING_OBJECT_ID>/ch00_0 -c:v copy -bsf:v filter_units=remove_types=0 -c:a copy -rtsp_transport tcp -f rtsp {output}"
 
 # 預熱原生直通流 (0% CPU 負載)，確保點擊攝影機彈窗時毫秒級出圖不閃黑
 preload:

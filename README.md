@@ -73,6 +73,19 @@
 
 ---
 
+## 🎬 雙攝影機零 CPU 轉碼串流與總覽靜音架構 (`go2rtc`)
+
+1. **客廳：小米智慧攝影機 C400 (`192.168.31.104`, `c400_hd`)**：
+   * 原生 2.5K (`2560×1440`) H.265 + AAC 直通 MSE，0% CPU 轉碼負擔。
+2. **書房：Lollipop 嬰兒攝影機 - 樺 (`192.168.31.102`, `lollipop`)**：
+   * 區網 RTSP 位址：`rtsp://192.168.31.102:554/live/<MD5(cam_setting.objectId)>/ch00_0`
+   * 透過 `-c:v copy -bsf:v filter_units=remove_types=0 -c:a copy` 零轉碼剔除韌體 RTP 封包開頭的 `type=0` 空 NAL 單元，解決 MSE 解碼與 `api/frame.jpeg` 快照擷取問題。
+3. **`/home/overview` 預覽強制靜音 ✕ Control 視窗一鍵開聲音**：
+   * 總覽卡片預覽自動附加 `media=video&muted=1&controls=0`（不拉音軌、強制靜音）。
+   * 點擊進入詳細控制視窗或平面圖彈窗時，自動啟用 `<video controls>` 與右上角 **「🔇 點擊開啟現場聲音」** 按鈕。
+
+---
+
 ## 🛠️ Antigravity Skill 結構與使用方式
 
 本專案內建符合 Antigravity Customization System 規範的 Skill：
