@@ -80,11 +80,13 @@ customElements.whenDefined("ha-camera-stream").then((StreamClass) => {
     }
 
     let iframe = root.querySelector("iframe.go2rtc-c400-iframe");
-    const isSilentOverview = !this.controls || window.location.pathname.startsWith("/home");
+    // Only mute & strip audio on the card preview (!this.controls).
+    // When user clicks into the camera control dialog (this.controls === true), enable full controls & audio!
+    const isCardPreview = !this.controls;
     const targetSrc = getStreamUrl({
-      videoOnly: isSilentOverview,
+      videoOnly: isCardPreview,
       muted: true,
-      controls: Boolean(this.controls) && !window.location.pathname.startsWith("/home"),
+      controls: !isCardPreview,
     });
     if (!iframe) {
       Array.from(root.children).forEach((el) => {
@@ -95,7 +97,7 @@ customElements.whenDefined("ha-camera-stream").then((StreamClass) => {
       iframe = document.createElement("iframe");
       iframe.className = "go2rtc-c400-iframe";
       iframe.src = targetSrc;
-      iframe.allow = isSilentOverview ? "fullscreen" : "autoplay; fullscreen";
+      iframe.allow = isCardPreview ? "fullscreen" : "autoplay; fullscreen";
       iframe.style.cssText =
         "width:100%;height:100%;min-height:200px;border:0;display:block;background:#000;" +
         (this.controls ? "pointer-events:auto;" : "pointer-events:none;");

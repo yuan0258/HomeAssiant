@@ -73,8 +73,8 @@ description: >-
    * `c400-go2rtc.js` 的 `_renderModalContent()` 專屬設備卡片區塊。
    * Home Assistant 的 `config/device_registry/update` WebSocket API（更新 `name_by_user` 與 `area_id`）。
 
-### 流程 C：多攝影機與 `/home/overview` 靜音保護原則
-* **強制規範**：在 `/home/overview` 總覽頁面（或任何 `ha-camera-stream` 的 `!this.controls` 卡片預覽模式）下，攝影機串流 URL **必須**附加 `media=video&muted=1&controls=0`（即 `http://192.168.31.212:1984/stream.html?src=c400_hd&mode=mse&media=video&muted=1&controls=0`）。
-* 這確保：
-  1. `go2rtc` 的 `video-rtc.js` 只向伺服器請求純影像 (`video`) 軌道，不傳輸音訊封包。
-  2. `<video>` 標籤強制設定 `defaultMuted = true`、`muted = true`、`volume = 0`，避免未來擴充多台攝影機時在總覽頁面產生聲音衝突、回音或瀏覽器自動播放阻擋。
+### 流程 C：多攝影機與 `/home/overview` 靜音保護原則（點擊進入 Control 視窗可開啟聲音）
+* **卡片預覽強制靜音 (`!this.controls`)**：在 `/home/overview` 總覽頁面的小卡片預覽模式下，攝影機串流 URL 自動附加 `media=video&muted=1&controls=0`（即 `http://192.168.31.212:1984/stream.html?src=c400_hd&mode=mse&media=video&muted=1&controls=0`），避免多台攝影機在總覽頁面產生聲音衝突。
+* **點擊進入 Control 詳細視窗 (`this.controls === true`) 支援完整控制與聲音**：
+  * 當使用者在 `/home/overview` 點擊攝影機卡片開啟詳細控制彈窗（或於平面圖開啟 C400 彈窗）時，播放器自動切換為包含音軌與控制列的 `stream.html?src=c400_hd&mode=mse&muted=1`。
+  * 畫面同時提供底部原生 `<video controls>` 控制列與右上角 **「🔇 點擊開啟現場聲音 / 🔊 聲音已開啟」** 一鍵切換按鈕，點選即可立即收聽現場聲音。

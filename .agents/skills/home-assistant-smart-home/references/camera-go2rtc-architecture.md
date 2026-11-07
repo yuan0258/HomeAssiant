@@ -36,5 +36,5 @@
      * `muted=1`：強制設定 `video.video.defaultMuted = true`、`video.video.muted = true`、`video.video.volume = 0`。
      * `controls=0`：隱藏瀏覽器原生 `<video controls>` 控制列，保持總覽卡片畫面乾淨。
 2. **`ha-camera-stream` 自動判別 (`c400-go2rtc.js`)**：
-   * 當位於 `/home` 總覽頁面或 `!this.controls` 卡片預覽時，自動使用：
-     `http://192.168.31.212:1984/stream.html?src=c400_hd&mode=mse&media=video&muted=1&controls=0`
+   * **總覽卡片預覽 (`!this.controls`)**：自動使用 `http://192.168.31.212:1984/stream.html?src=c400_hd&mode=mse&media=video&muted=1&controls=0`（完全靜音、不拉音軌、`pointer-events: none` 讓點擊卡片可開啟 HA 詳細控制視窗）。
+   * **點擊進入攝影機 Control 視窗 (`this.controls === true`) 或平面圖 C400 彈窗**：自動載入完整音視訊流 (`video,audio`)、開啟底部 `<video controls>` 控制列，並在畫面右上角提供 **「🔇 點擊開啟現場聲音」** 快捷按鈕，點擊即可立即播放現場聲音 (`volume = 1.0`)。
