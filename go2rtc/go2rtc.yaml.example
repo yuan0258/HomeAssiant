@@ -1,0 +1,26 @@
+api:
+  listen: ":1984"
+  origin: "*"
+
+http:
+  static_dir: /config/www
+
+rtsp:
+  listen: ":8554"
+
+webrtc:
+  listen: ":8555"
+
+streams:
+  # 網頁端專用：原生 2.5K (2560x1440) H.265 零 CPU 消耗直通 + AAC 音訊
+  c400_hd:
+    - rtsp://<RTSP_USER>:<RTSP_PASSWORD>@192.168.31.104:554/live/ch00_0
+    - ffmpeg:c400_hd#audio=aac
+
+  # Apple HomeKit 專用：僅在 iPhone / HomePod 請求時按需啟動 H.264 轉碼 (不常駐 preload)
+  c400:
+    - ffmpeg:rtsp://<RTSP_USER>:<RTSP_PASSWORD>@192.168.31.104:554/live/ch00_0#video=h264#audio=aac#width=1280#height=720#raw=-preset ultrafast -tune zerolatency
+
+# 僅預熱 c400_hd 原生直通流 (0% CPU 負載)，確保點擊攝影機彈窗時毫秒級出圖不閃黑
+preload:
+  c400_hd: ""

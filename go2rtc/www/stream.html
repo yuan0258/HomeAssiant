@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="apple-touch-icon" href="https://go2rtc.org/icons/apple-touch-icon-180x180.png" sizes="180x180">
+    <link rel="icon" href="https://go2rtc.org/icons/favicon.ico">
+    <link rel="manifest" href="https://go2rtc.org/manifest.json">
+    <title>stream - go2rtc</title>
+    <style>
+        body {
+            background: black;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+        }
+
+        .flex {
+            flex-wrap: wrap;
+            align-content: flex-start;
+            align-items: flex-start;
+        }
+    </style>
+</head>
+<body>
+<script type="module" src="./video-stream.js"></script>
+<script type="module">
+    const params = new URLSearchParams(location.search);
+
+    // support multiple streams and multiple modes
+    const streams = params.getAll('src');
+    const modes = params.getAll('mode');
+    if (modes.length === 0) modes.push('');
+
+    while (modes.length > streams.length) {
+        streams.push(streams[0]);
+    }
+    while (streams.length > modes.length) {
+        modes.push(modes[0]);
+    }
+
+    if (streams.length > 1) {
+        document.body.className = 'flex';
+    }
+
+    const background = params.get('background') !== 'false';
+    const width = '1 0 ' + (params.get('width') || '320px');
+    const mediaParam = params.get('media');
+    const isMuted = params.get('muted') === '1' || params.get('muted') === 'true' || mediaParam === 'video';
+    const hideControls = params.get('controls') === '0' || params.get('controls') === 'false';
+
+    customElements.whenDefined('video-stream').then(() => {
+        for (let i = 0; i < streams.length; i++) {
+            /** @type {VideoStream} */
+            const video = document.createElement('video-stream');
+            video.background = background;
+            video.mode = modes[i] || video.mode;
+            if (mediaParam) {
+                video.media = mediaParam;
+            }
+            video.style.flex = width;
+            document.body.appendChild(video);
+
+            if (video.video) {
+                if (isMuted) {
+                    video.video.defaultMuted = true;
+                    video.video.muted = true;
+                    video.video.volume = 0;
+                    video.video.setAttribute('muted', '');
+                    video.video.addEventListener('volumechange', () => {
+                        if (mediaParam === 'video' && !video.video.muted) {
+                            video.video.muted = true;
+                        }
+                    });
+                }
+                if (hideControls) {
+                    video.video.controls = false;
+                }
+            }
+
+            video.src = new URL('api/ws?src=' + encodeURIComponent(streams[i]), location.href);
+        }
+    });
+
+    document.title = streams.join('/') + ' - go2rtc';
+</script>
+</body>
+</html>

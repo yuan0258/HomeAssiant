@@ -1,0 +1,70 @@
+# Loads default set of integrations. Do not remove.
+default_config:
+
+go2rtc:
+  url: http://127.0.0.1:1984
+
+frontend:
+  themes: !include_dir_merge_named themes
+  extra_module_url:
+    - /local/c400-go2rtc.js?v=17
+
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+
+# Device Customization Patches
+homeassistant:
+  customize:
+    vacuum.rockrobo_v1_6536_robot_cleaner:
+      conn_mode: cloud
+    camera.chuangmi_039c04_c643_camera_control:
+      image_address: http://127.0.0.1:1984/api/frame.jpeg?src=c400
+    sensor.xiaomi_rn06_2724_connected_device_number:
+      friendly_name: "Xiaomi 路由器 BE3600 連線設備數"
+      product_name: "Xiaomi 路由器 BE3600 (Xiaomi Router BE3600)"
+      model: "RN06 (xiaomi.router.rn06)"
+      default_ssid: "m06_minet_2724"
+      active_ssid: "MissH"
+      management_interface: "http://192.168.31.1 (miwifi.com)"
+      power_input: "12V ⎓ 1.5A"
+      serial_number: "60388/K4Y100066"
+      mac_address: "44:F7:70:70:27:24"
+      sku_number: "DVB4494US"
+      manufacture_year: "2024年"
+      ncc_id: "CCAH24LP1190T2"
+      bsmi_id: "D39245 (RoHS)"
+      fcc_id: "2AIMRRN06"
+
+# Apple HomeKit Bridges
+homekit:
+  - name: "Pi4 Smart Home"
+    port: 21063
+    mode: bridge
+    filter:
+      include_entities:
+        - light.yeelink_bslamp2_2a87_light
+        - vacuum.rockrobo_v1_6536_robot_cleaner
+        - sensor.miaomiaoce_o2_f576_temperature
+        - sensor.miaomiaoce_o2_f576_relative_humidity
+        - media_player.monitor_samsung_m7_32
+
+  - name: "C400 Camera"
+    port: 21064
+    mode: accessory
+    filter:
+      include_entities:
+        - camera.chuangmi_039c04_c643_camera_control
+    entity_config:
+      camera.chuangmi_039c04_c643_camera_control:
+        stream_source: "-rtsp_transport tcp -i rtsp://127.0.0.1:8554/c400 -preset superfast"
+        stream_count: 2
+        video_codec: libx264
+        video_profile_names:
+          - "baseline"
+          - "main"
+          - "high"
+        support_audio: true
+        max_fps: 20
+        max_width: 864
+        max_height: 480
