@@ -1,0 +1,143 @@
+/* ==========================================================================
+   成馨空間設計 · 御美學 ha-floorplan 互動樣式表 (全屋拓撲整合版)
+   路徑: /config/www/floorplan/floorplan.css  →  /local/floorplan/floorplan.css
+   ========================================================================== */
+
+.ha-room, .ha-entity {
+  cursor: pointer;
+  transition: fill .35s ease, stroke .35s ease, opacity .35s ease, filter .35s ease, transform .25s ease;
+}
+
+.ha-entity:hover {
+  filter: drop-shadow(0 0 12px rgba(56, 189, 248, 0.95)) !important;
+}
+
+.ha-room:hover {
+  stroke: rgba(148, 163, 184, 0.7) !important;
+  stroke-width: 2px;
+}
+
+/* 當從右側拓撲圖懸停設備時，平面圖對應房間與圖示高亮脈衝 */
+@keyframes topo-pulse {
+  0%, 100% { filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.95)); }
+  50% { filter: drop-shadow(0 0 22px rgba(56, 189, 248, 1)) brightness(1.3); }
+}
+
+.topology-highlight-room {
+  fill: rgba(56, 189, 248, 0.28) !important;
+  stroke: #38bdf8 !important;
+  stroke-width: 3px !important;
+}
+
+.topology-highlight-entity {
+  animation: topo-pulse 1s ease-in-out infinite !important;
+}
+
+/* ---------- 1. 小孩房燈光 ---------- */
+.room-light-on {
+  fill: rgba(251, 191, 36, 0.28) !important;
+  stroke: #fbbf24 !important;
+  stroke-width: 2px;
+}
+.room-light-off { fill: #1e293b; }
+
+.light-icon-on circle {
+  fill: #fbbf24 !important;
+  stroke: #fef08a !important;
+  filter: drop-shadow(0 0 12px rgba(251, 191, 36, .95));
+}
+.light-icon-off circle {
+  fill: #1e293b !important;
+  stroke: #64748b !important;
+}
+.light-icon-off { opacity: .82; }
+
+/* ---------- 2. 客廳溫度：房間染色 + 文字色階 ---------- */
+.room-temp-cold        { fill: rgba(56, 189, 248, 0.22) !important; }
+.room-temp-comfortable { fill: rgba(74, 222, 128, 0.16) !important; }
+.room-temp-warm        { fill: rgba(251, 191, 36, 0.22) !important; }
+.room-temp-hot         { fill: rgba(248, 113, 113, 0.28) !important; }
+
+.temp-cold        { fill: #38bdf8 !important; }
+.temp-comfortable { fill: #4ade80 !important; }
+.temp-warm        { fill: #fbbf24 !important; }
+.temp-hot         { fill: #f87171 !important; }
+
+.humi-dry    { fill: #fbbf24 !important; }
+.humi-normal { fill: #7dd3fc !important; }
+.humi-wet    { fill: #818cf8 !important; }
+
+/* ---------- 3. C400 攝影機 ---------- */
+.camera-on circle {
+  stroke: #38bdf8 !important;
+  filter: drop-shadow(0 0 10px rgba(56, 189, 248, .85));
+}
+.camera-off { opacity: .45; }
+.camera-off circle { stroke: #64748b !important; }
+
+@keyframes rec-blink { 0%,100% { opacity: 1; } 50% { opacity: .2; } }
+.cam-motion-on  { fill: #ef4444 !important; animation: rec-blink 1.4s infinite; }
+.cam-motion-off { fill: #475569 !important; }
+
+/* ---------- 4. 掃地機器人 ---------- */
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes pulse-ring {
+  0%,100% { filter: drop-shadow(0 0 2px rgba(163, 230, 53, .6)); }
+  50%     { filter: drop-shadow(0 0 14px rgba(163, 230, 53, 1)); }
+}
+.vacuum-cleaning {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: spin 2.5s linear infinite, pulse-ring 1.5s ease-in-out infinite;
+}
+.vacuum-returning circle:first-child { stroke: #fbbf24 !important; }
+.vacuum-returning { animation: pulse-ring 1s ease-in-out infinite; }
+.vacuum-docked { opacity: .9; }
+.vacuum-error circle:first-child { stroke: #ef4444 !important; fill: rgba(239, 68, 68, .3) !important; }
+
+.room-vacuum-active {
+  fill: rgba(163, 230, 53, 0.16) !important;
+  stroke: #a3e635 !important;
+  stroke-width: 2px;
+  stroke-dasharray: 6, 4;
+}
+
+.battery-low  { fill: #ef4444 !important; }
+.battery-mid  { fill: #fbbf24 !important; }
+.battery-high { fill: #a3e635 !important; }
+
+/* ---------- 5. 書房 Samsung M7 / 客廳 Sony TV / 主臥 HomePod ---------- */
+.media-on rect, .media-on circle {
+  stroke: #38bdf8 !important;
+  filter: drop-shadow(0 0 8px rgba(56, 189, 248, .75));
+}
+.media-on .screen {
+  fill: rgba(56, 189, 248, .45) !important;
+  filter: drop-shadow(0 0 12px rgba(56, 189, 248, .9));
+}
+.media-off { opacity: .68; }
+
+.room-media-on {
+  fill: rgba(56, 189, 248, 0.14) !important;
+  stroke: #38bdf8 !important;
+  stroke-width: 2px;
+}
+
+/* 離線 */
+.entity-unavailable { opacity: .55 !important; }
+
+/* ---------- 6. 小愛音箱 mini (主臥室) ---------- */
+.ha-xiaoai circle {
+  stroke: #f97316 !important;
+  transition: all .35s ease;
+}
+.ha-xiaoai:hover circle {
+  fill: rgba(249, 115, 22, 0.22) !important;
+  filter: drop-shadow(0 0 14px rgba(249, 115, 22, 0.95)) !important;
+}
+.xiaoai-playing circle {
+  animation: pulse-ring 1.3s ease-in-out infinite;
+  fill: rgba(249, 115, 22, 0.28) !important;
+  stroke: #fb923c !important;
+}
+

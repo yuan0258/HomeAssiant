@@ -372,6 +372,28 @@ const DEVICE_CATALOG = {
       "button.rockrobo_v1_6536_identify"
     ]
   },
+  xiaoai_mini: {
+    id: "xiaoai_mini",
+    icon: "🔊",
+    name: "小愛音箱 mini (主臥室)",
+    room: "主臥室 Master Bedroom",
+    ip: "192.168.31.129 (MAC: 7C:49:EB:68:D7:AB)",
+    connType: "Xiaomi Miot 區網/雲端整合 (DID: 88793664)",
+    model: "xiaomi.wifispeaker.lx01 • 韌體: v1.48.4",
+    deviceId: "ba2bf73b34d9e9086b9742084d5e680d",
+    primaryEntity: "media_player.xiaomi_lx01_d7ab_play_control",
+    description: "主臥室小愛音箱 mini（小愛同學），支援米家語音助理、TTS 智慧文字語音播報、米家文字指令執行、媒體播放控制、停止鬧鐘與喚醒互動。",
+    entities: [
+      "media_player.xiaomi_lx01_d7ab_play_control",
+      "text.xiaomi_lx01_d7ab_play_text",
+      "text.xiaomi_lx01_d7ab_execute_text_directive",
+      "button.xiaomi_lx01_d7ab_wake_up",
+      "button.xiaomi_lx01_d7ab_play_music",
+      "button.xiaomi_lx01_d7ab_stop_alarm",
+      "button.xiaomi_lx01_d7ab_info",
+      "sensor.xiaomi_lx01_d7ab_conversation"
+    ]
+  },
   // Architectural Rooms & Legend Modals
   room_master: {
     id: "room_master",
@@ -610,8 +632,8 @@ class IotFloorplanTopologyCard extends HTMLElement {
   async _loadFloorplanSvg() {
     try {
       const [svgRes, cssRes] = await Promise.all([
-        fetch("/local/floorplan/floorplan.svg?v=20", { cache: "no-cache" }),
-        fetch("/local/floorplan/floorplan.css?v=20", { cache: "no-cache" }),
+        fetch("/local/floorplan/floorplan.svg?v=22", { cache: "no-cache" }),
+        fetch("/local/floorplan/floorplan.css?v=22", { cache: "no-cache" }),
       ]);
       const svgText = await svgRes.text();
       const cssText = await cssRes.text();
@@ -674,6 +696,7 @@ class IotFloorplanTopologyCard extends HTMLElement {
           samsung_m7: "area.study_room",
           lollipop_camera: "area.study_room",
           roborock_vacuum: "area.storage",
+          xiaoai_mini: "area.bedroom_master",
           room_master: "area.bedroom_master",
           room_kitchen: "area.kitchen",
           room_bath_guest: "area.bathroom_guest",
@@ -820,6 +843,11 @@ class IotFloorplanTopologyCard extends HTMLElement {
     const hpActive = !["off", "standby", "unavailable", "unknown"].includes(hpState);
     setElClass("media_player.wo_shi_wo_shi", hpActive ? "media-on" : "media-off", ["media-"]);
 
+    // 8. XiaoAi Mini (Master Bedroom)
+    const xaState = this._getState("media_player.xiaomi_lx01_d7ab_play_control", "off");
+    const xaPlaying = xaState === "playing";
+    setElClass("media_player.xiaomi_lx01_d7ab_play_control", xaPlaying ? "xiaoai-playing" : "", ["xiaoai-"]);
+
     // 8. Lollipop Baby Camera (Study)
     setElClass("camera.lollipop_baby_camera", "camera-on", ["camera-"]);
   }
@@ -888,6 +916,14 @@ class IotFloorplanTopologyCard extends HTMLElement {
     );
 
     setBadge("badge-lollipop", "🟢 go2rtc 直連 (串流中)", "pill-emerald");
+
+    const xaState = this._getState("media_player.xiaomi_lx01_d7ab_play_control", "off");
+    const xaVol = Math.round((parseFloat(this._getAttr("media_player.xiaomi_lx01_d7ab_play_control", "volume_level", 0.36)) || 0.36) * 100);
+    setBadge(
+      "badge-xiaoai",
+      xaState === "playing" ? `🎵 播放中 • 音量 ${xaVol}%` : `🟢 在線 • 音量 ${xaVol}%`,
+      xaState === "playing" ? "pill-emerald" : "pill-amber"
+    );
 
     const vacBat = this._getState("sensor.rockrobo_v1_6536_battery_level", "100");
     const vacStatus = this._getState("vacuum.rockrobo_v1_6536_robot_cleaner", "docked");
@@ -1422,6 +1458,67 @@ class IotFloorplanTopologyCard extends HTMLElement {
           </div>
         </div>
       `;
+    } else if (devKey === "xiaoai_mini") {
+      const mainEntity = dev.primaryEntity;
+      const st = this._getState(mainEntity, "idle");
+      const volRaw = this._getAttr(mainEntity, "volume_level", 0.36);
+      const volPct = Math.round((parseFloat(volRaw) || 0.36) * 100);
+      const isMuted = this._getAttr(mainEntity, "is_volume_muted", false);
+      controlsHtml = `
+        <div class="modal-section">
+          <div class="section-title">🔊 小愛音箱 mini 媒體播放與語音控制 (狀態: ${st} • 音量: ${volPct}%)</div>
+          <div class="control-grid">
+            <button class="ctrl-btn active-emerald" data-action="media-cmd" data-entity="${mainEntity}" data-cmd="media_play_pause">
+              <span>⏯️ 播放 / 暫停</span>
+              <small>切換音樂播放</small>
+            </button>
+            <button class="ctrl-btn" data-action="media-cmd" data-entity="${mainEntity}" data-cmd="volume_down">
+              <span>🔉 音量調小 (-)</span>
+              <small>降低音量</small>
+            </button>
+            <button class="ctrl-btn" data-action="media-cmd" data-entity="${mainEntity}" data-cmd="volume_up">
+              <span>🔊 音量調大 (+)</span>
+              <small>提高音量</small>
+            </button>
+            <button class="ctrl-btn ${isMuted ? "active-amber" : ""}" data-action="media-cmd" data-entity="${mainEntity}" data-cmd="volume_mute" data-mute="${!isMuted}">
+              <span>${isMuted ? "🔇 取消靜音" : "🔈 設為靜音"}</span>
+              <small>切換靜音狀態</small>
+            </button>
+            <button class="ctrl-btn active-blue" data-action="press-btn" data-entity="button.xiaomi_lx01_d7ab_wake_up">
+              <span>⚡ 喚醒小愛</span>
+              <small>點擊喚醒智慧語音</small>
+            </button>
+            <button class="ctrl-btn active-amber" data-action="press-btn" data-entity="button.xiaomi_lx01_d7ab_stop_alarm">
+              <span>🔔 停止鬧鐘</span>
+              <small>停止進行中的鬧鐘</small>
+            </button>
+          </div>
+
+          <!-- TTS 智慧文字語音播報 -->
+          <div style="margin-top:14px;background:rgba(30,41,59,0.5);border:1px solid rgba(148,163,184,0.18);border-radius:10px;padding:12px;">
+            <div style="font-size:12.5px;font-weight:700;color:#f97316;margin-bottom:8px;">📢 小愛 TTS 智慧語音文字播報</div>
+            <div style="display:flex;gap:8px;margin-bottom:8px;">
+              <input type="text" id="xiaoai-tts-input" placeholder="輸入要讓小愛播報的文字，例如：歡迎回家、開飯囉！" style="flex:1;background:#0f172a;border:1px solid rgba(148,163,184,0.3);border-radius:8px;padding:8px 12px;color:#f8fafc;font-size:13px;" />
+              <button class="mini-pill-btn" style="background:#ea580c;color:#fff;border-color:#f97316;padding:8px 14px;font-weight:600;" data-action="xiaoai-tts">🗣️ 立即播報</button>
+            </div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+              <button class="mini-pill-btn" data-action="quick-tts" data-text="歡迎回家！今天辛苦了！">👋 歡迎回家</button>
+              <button class="mini-pill-btn" data-action="quick-tts" data-text="準備吃晚飯囉，請大家洗手用餐！">🍲 開飯廣播</button>
+              <button class="mini-pill-btn" data-action="quick-tts" data-text="現在時間已晚，該準備睡覺了，晚安！">🌙 晚安就寢</button>
+              <button class="mini-pill-btn" data-action="quick-tts" data-text="提醒您，出門請記得帶鑰匙與關好門窗。">🚪 出門提醒</button>
+            </div>
+          </div>
+
+          <!-- 執行文字指令 (米家聯動控制) -->
+          <div style="margin-top:12px;background:rgba(30,41,59,0.5);border:1px solid rgba(148,163,184,0.18);border-radius:10px;padding:12px;">
+            <div style="font-size:12.5px;font-weight:700;color:#38bdf8;margin-bottom:8px;">🤖 執行米家文字指令 (語音命令模擬)</div>
+            <div style="display:flex;gap:8px;">
+              <input type="text" id="xiaoai-directive-input" placeholder="輸入米家指令，例如：打開客廳燈、現在幾度、關閉床頭燈" style="flex:1;background:#0f172a;border:1px solid rgba(148,163,184,0.3);border-radius:8px;padding:8px 12px;color:#f8fafc;font-size:13px;" />
+              <button class="mini-pill-btn" style="background:#0284c7;color:#fff;border-color:#38bdf8;padding:8px 14px;font-weight:600;" data-action="xiaoai-directive">🚀 執行指令</button>
+            </div>
+          </div>
+        </div>
+      `;
     }
 
     bodyEl.innerHTML = `
@@ -1624,7 +1721,29 @@ class IotFloorplanTopologyCard extends HTMLElement {
           }
         } else if (action === "media-cmd") {
           const cmd = el.getAttribute("data-cmd");
-          this._callService("media_player", cmd, { entity_id: entity });
+          if (cmd === "volume_mute") {
+            const isMute = el.getAttribute("data-mute") === "true";
+            this._callService("media_player", "volume_mute", { entity_id: entity, is_volume_muted: isMute });
+          } else {
+            this._callService("media_player", cmd, { entity_id: entity });
+          }
+        } else if (action === "xiaoai-tts") {
+          const inp = container.querySelector("#xiaoai-tts-input");
+          if (inp && inp.value.trim()) {
+            this._callService("text", "set_value", { entity_id: "text.xiaomi_lx01_d7ab_play_text", value: inp.value.trim() });
+            inp.value = "";
+          }
+        } else if (action === "quick-tts") {
+          const text = el.getAttribute("data-text");
+          if (text) {
+            this._callService("text", "set_value", { entity_id: "text.xiaomi_lx01_d7ab_play_text", value: text });
+          }
+        } else if (action === "xiaoai-directive") {
+          const inp = container.querySelector("#xiaoai-directive-input");
+          if (inp && inp.value.trim()) {
+            this._callService("text", "set_value", { entity_id: "text.xiaomi_lx01_d7ab_execute_text_directive", value: inp.value.trim() });
+            inp.value = "";
+          }
         }
       });
     });
@@ -2347,6 +2466,18 @@ class IotFloorplanTopologyCard extends HTMLElement {
                   </div>
                 </div>
                 <span id="badge-lollipop" class="status-pill pill-emerald">go2rtc 直連</span>
+              </div>
+
+              <!-- XiaoAi Speaker Mini -->
+              <div class="topo-node" data-device="xiaoai_mini">
+                <div class="topo-node-left">
+                  <span class="topo-icon">🔊</span>
+                  <div>
+                    <div class="topo-title">小愛音箱 mini (主臥室)</div>
+                    <div class="topo-sub mono">192.168.31.129 • DID: 88793664</div>
+                  </div>
+                </div>
+                <span id="badge-xiaoai" class="status-pill pill-amber">語音助理</span>
               </div>
             </div>
 

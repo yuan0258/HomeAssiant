@@ -410,5 +410,12 @@
     </g>
     <circle id="lollipop-cry-indicator" class="ha-entity ha-cam-motion cam-motion-on" data-device="lollipop_camera" cx="405" cy="701" r="4.5" fill="#f472b6" />
 
+    <!-- ⑥ 主臥室：小愛音箱 mini (media_player.xiaomi_lx01_d7ab_play_control) -->
+    <g id="media_player.xiaomi_lx01_d7ab_play_control" class="ha-entity ha-xiaoai" data-device="xiaoai_mini">
+      <circle cx="622" cy="130" r="16" fill="#1e293b" stroke="#f97316" stroke-width="2.2" />
+      <text x="622" y="135" font-size="14" text-anchor="middle" pointer-events="none">🔊</text>
+      <text x="622" y="158" fill="#fdba74" font-family="sans-serif" font-size="9.5" font-weight="bold" text-anchor="middle" pointer-events="none">小愛 mini</text>
+    </g>
+
   </g>
 </svg>

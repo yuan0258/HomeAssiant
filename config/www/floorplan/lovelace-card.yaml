@@ -1,0 +1,121 @@
+# ==========================================================================
+# ha-floorplan 卡片配置 (真實裝置版) — 儀表板「平面圖」/lovelace-floorplan
+# 若手動貼上，請在儀表板「新增卡片 → 手動」貼上 card 區塊
+# ==========================================================================
+type: custom:floorplan-card
+full_height: true
+config:
+  image: /local/floorplan/floorplan.svg?v=3
+  stylesheet: /local/floorplan/floorplan.css?v=3
+  log_level: warning
+  console_log_level: warning
+  defaults:
+    hover_action: hover-info
+    tap_action: more-info
+
+  rules:
+    # ① 小孩房 Yeelink 床頭燈：燈泡 + 整個房間發光，點擊切換
+    - entity: light.yeelink_bslamp2_2a87_light
+      tap_action: light.toggle
+      state_action:
+        action: call-service
+        service: floorplan.class_set
+        service_data:
+          class: '${entity.state === "on" ? "light-icon-on" : (entity.state === "unavailable" ? "entity-unavailable" : "light-icon-off")}'
+    - entity: light.yeelink_bslamp2_2a87_light
+      element: area.bedroom_northwest
+      tap_action: light.toggle
+      state_action:
+        action: call-service
+        service: floorplan.class_set
+        service_data:
+          class: '${entity.state === "on" ? "room-light-on" : "room-light-off"}'
+
+    # ② 客廳右側 溫濕度計：數值 + 色階 + 客廳整區依溫度染色
+    - entity: sensor.miaomiaoce_o2_f576_temperature
+      state_action:
+        - action: call-service
+          service: floorplan.text_set
+          service_data:
+            text: '${isNaN(parseFloat(entity.state)) ? "--°C" : parseFloat(entity.state).toFixed(1) + "°C"}'
+        - action: call-service
+          service: floorplan.class_set
+          service_data:
+            class: '${(() => { const t = parseFloat(entity.state); if (isNaN(t)) return "entity-unavailable"; if (t < 21) return "temp-cold"; if (t <= 25.5) return "temp-comfortable"; if (t <= 28) return "temp-warm"; return "temp-hot"; })()}'
+    - entity: sensor.miaomiaoce_o2_f576_temperature
+      element: area.living_dining
+      state_action:
+        action: call-service
+        service: floorplan.class_set
+        service_data:
+          class: '${(() => { const t = parseFloat(entity.state); if (isNaN(t)) return ""; if (t < 21) return "room-temp-cold"; if (t <= 25.5) return "room-temp-comfortable"; if (t <= 28) return "room-temp-warm"; return "room-temp-hot"; })()}'
+    - entity: sensor.miaomiaoce_o2_f576_relative_humidity
+      state_action:
+        - action: call-service
+          service: floorplan.text_set
+          service_data:
+            text: '${isNaN(parseFloat(entity.state)) ? "--%" : Math.round(parseFloat(entity.state)) + "%"}'
+        - action: call-service
+          service: floorplan.class_set
+          service_data:
+            class: '${(() => { const h = parseFloat(entity.state); if (isNaN(h)) return "entity-unavailable"; if (h < 40) return "humi-dry"; if (h <= 65) return "humi-normal"; return "humi-wet"; })()}'
+
+    # ② 客廳右側 C400 攝影機：點擊開啟即時影像
+    - entity: camera.chuangmi_039c04_c643_camera_control
+      tap_action: more-info
+      state_action:
+        action: call-service
+        service: floorplan.class_set
+        service_data:
+          class: '${["unavailable", "off", "unknown"].includes(entity.state) ? "camera-off" : "camera-on"}'
+    - entity: switch.chuangmi_039c04_c643_motion_detection
+      tap_action: more-info
+      state_action:
+        action: call-service
+        service: floorplan.class_set
+        service_data:
+          class: '${entity.state === "on" ? "cam-motion-on" : "cam-motion-off"}'
+
+    # ③ 儲藏室右下 掃地機器人：清掃時旋轉發光，儲藏室區域虛線高亮
+    - entity: vacuum.rockrobo_v1_6536_robot_cleaner
+      tap_action: more-info
+      state_action:
+        action: call-service
+        service: floorplan.class_set
+        service_data:
+          class: '${({cleaning: "vacuum-cleaning", returning: "vacuum-returning", docked: "vacuum-docked", error: "vacuum-error", unavailable: "entity-unavailable"})[entity.state] || "vacuum-docked"}'
+    - entity: vacuum.rockrobo_v1_6536_robot_cleaner
+      element: area.storage
+      tap_action: more-info
+      state_action:
+        action: call-service
+        service: floorplan.class_set
+        service_data:
+          class: '${entity.state === "cleaning" ? "room-vacuum-active" : ""}'
+    - entity: sensor.rockrobo_v1_6536_battery_level
+      state_action:
+        - action: call-service
+          service: floorplan.text_set
+          service_data:
+            text: '${"🔋" + (isNaN(parseFloat(entity.state)) ? "--" : Math.round(parseFloat(entity.state))) + "%"}'
+        - action: call-service
+          service: floorplan.class_set
+          service_data:
+            class: '${(() => { const b = parseFloat(entity.state); if (isNaN(b)) return "entity-unavailable"; if (b < 20) return "battery-low"; if (b < 50) return "battery-mid"; return "battery-high"; })()}'
+
+    # ④ 書房 Samsung M7 螢幕：開機時螢幕亮起、書房區域高亮
+    - entity: media_player.monitor_samsung_m7_32
+      tap_action: more-info
+      state_action:
+        action: call-service
+        service: floorplan.class_set
+        service_data:
+          class: '${["off", "standby", "unavailable", "unknown"].includes(entity.state) ? "media-off" : "media-on"}'
+    - entity: media_player.monitor_samsung_m7_32
+      element: area.study_room
+      tap_action: more-info
+      state_action:
+        action: call-service
+        service: floorplan.class_set
+        service_data:
+          class: '${["off", "standby", "unavailable", "unknown"].includes(entity.state) ? "" : "room-media-on"}'

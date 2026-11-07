@@ -69,6 +69,7 @@
 | **小孩房** | 💡 米家床頭燈 2 | `192.168.31.143` | 區網直連 + 藍牙網關 | `light.yeelink_bslamp2_2a87_light` |
 | **書房** | 🖥️ Samsung M7 32吋智慧螢幕 | `192.168.31.97` | 區網直連 (Tizen / DLNA) | `media_player.monitor_samsung_m7_32` |
 | **書房** | 🍼 Lollipop 嬰兒攝影機 (樺) | `192.168.31.102` (`10:D0:7A:B4:A7:D4`) | go2rtc RTSP 直連 (`554`) | `camera.lollipop_baby_camera` |
+| **主臥室** | 🔊 小愛音箱 mini (小愛同學) | `192.168.31.129` (`7C:49:EB:68:D7:AB`) | Xiaomi Miot 整合 (`lx01`) | `media_player.xiaomi_lx01_d7ab_play_control` |
 | **儲藏室** | 🤖 米家掃地機器人 (1代) | `192.168.31.240` | Xiaomi Miot Cloud Bridge | `vacuum.rockrobo_v1_6536_robot_cleaner` |
 
 ---
