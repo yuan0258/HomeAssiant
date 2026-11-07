@@ -7,8 +7,10 @@
    * `c400` 通道僅在 iPhone / HomePod「家庭」App 請求畫面時按需啟動 `ffmpeg` H.264 轉碼。
 2. **書房：Lollipop 嬰兒攝影機 - 樺 (`192.168.31.102`, `camera.lollipop_baby_camera`)**：
    * 主機名稱：`lollipop-basic-162DEC40426A.local`（MAC: `10:D0:7A:B4:A7:D4`）。
-   * 區網 RTSP 路徑計算規則：`rtsp://192.168.31.102:554/live/<MD5(cam_setting.objectId)>/ch00_0`（其中 `cam_setting.objectId = RCLpTK33BN`）。
-   * 原生輸出 H.264 (`Baseline`) + AAC (`8000Hz`)，在 `go2rtc.yaml` 設定為 `lollipop` 並啟用 `preload`，零 CPU 轉碼消耗！
+   * 區網 RTSP 路徑計算規則：`rtsp://192.168.31.102:554/live/<MD5(cam_setting.objectId)>/ch00_0`（其中 `cam_setting.objectId = RCLpTK33BN`，MD5 為 `eb3b74e75c1d0d61fe3018ddb7853ff7`）。
+   * **韌體 RTP / H.264 封包異常與零 CPU 修復 (`-bsf:v filter_units=remove_types=0`)**：
+     * Lollipop 原廠 RTSP Server 存在兩項非標準行為：(1) 在每個 RTP 封包開頭直接塞入 Annex-B 起始碼 `00 00 00 01`（導致 RTP demuxer 拆出長度為 0 的 `nal_unit_type = 0` 空 NAL 單元，使得 `go2rtc` 無法辨識 IDR Keyframe Type 5 且 MP4 `avcC` 報錯 `Invalid NAL unit size`）；(2) SDP 標頭寫死假 Baseline SPS (`Z0IAHvQCgC3I`)，但實際影像為 **1280×720 H.264 High Profile + AAC (8000Hz)**。
+     * **標準設定 (`go2rtc.yaml`)**：使用 `exec:ffmpeg` 搭配 `-c:v copy -bsf:v filter_units=remove_types=0 -c:a copy`，在不進行任何視訊轉碼（0% CPU 負擔）的前提下，自動剔除 `type=0` 空 NAL 並拆出正確的 `SPS(7)`、`PPS(8)`、`IDR(5)`，使 `api/frame.jpeg?src=lollipop`、HA `/api/camera_proxy/camera.lollipop_baby_camera` 與 Chrome MSE 串流皆可秒開播放。
    * ⚠️ **硬體供電注意**：Lollipop 的 USB 介面僅供電（無 UVC 資料傳輸），請使用獨立 5V 充電器供電，切勿插在樹莓派 4 的 USB 孔以免造成樹莓派 5V 低電壓 (`Undervoltage detected`) 斷線。
 
 ---

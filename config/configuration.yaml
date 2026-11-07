@@ -7,7 +7,7 @@ go2rtc:
 frontend:
   themes: !include_dir_merge_named themes
   extra_module_url:
-    - /local/c400-go2rtc.js?v=19
+    - /local/c400-go2rtc.js?v=20
 
 automation: !include automations.yaml
 script: !include scripts.yaml
@@ -20,6 +20,18 @@ homeassistant:
       conn_mode: cloud
     camera.chuangmi_039c04_c643_camera_control:
       image_address: http://127.0.0.1:1984/api/frame.jpeg?src=c400
+    camera.lollipop_baby_camera:
+      friendly_name: "Lollipop 嬰兒攝影機 (書房 - 樺)"
+      image_address: http://127.0.0.1:1984/api/frame.jpeg?src=lollipop
+      product_name: "Lollipop Baby Camera (智慧型嬰兒監視器)"
+      model: "lollipop-basic-162DEC40426A"
+      camera_id: "m3YYPO7gda"
+      object_id: "RCLpTK33BN"
+      baby_name: "樺 (生日: 2025-04-12)"
+      ip_address: "192.168.31.102 (Port 554 RTSP)"
+      mac_address: "10:D0:7A:B4:A7:D4"
+      cry_detection: "已啟用 (靈敏度: 中 / Level 1)"
+      noise_alert_threshold: "80 dB"
     sensor.xiaomi_rn06_2724_connected_device_number:
       friendly_name: "Xiaomi 路由器 BE3600 連線設備數"
       product_name: "Xiaomi 路由器 BE3600 (Xiaomi Router BE3600)"

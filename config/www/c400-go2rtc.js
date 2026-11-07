@@ -23,7 +23,7 @@ function getStreamUrl(opts = {}) {
   return `http://${host}:1984/stream.html?${params.toString()}`;
 }
 
-// 1. Force hui-picture-entity-card for C400 & Lollipop to always use camera_view: "live"
+// 1. Force hui-picture-entity-card & hui-image for C400 & Lollipop to always use camera_view: "live"
 customElements.whenDefined("hui-picture-entity-card").then((CardClass) => {
   const origSetConfig = CardClass.prototype.setConfig;
   CardClass.prototype.setConfig = function (config) {
@@ -37,6 +37,19 @@ customElements.whenDefined("hui-picture-entity-card").then((CardClass) => {
       };
     }
     return origSetConfig.call(this, config);
+  };
+});
+
+customElements.whenDefined("hui-image").then((ImageClass) => {
+  const origUpdated = ImageClass.prototype.updated;
+  ImageClass.prototype.updated = function (changedProps) {
+    const ent = this.cameraImage || this.entity;
+    if (ent && CAMERA_STREAM_MAP[ent] && this.cameraView !== "live") {
+      this.cameraView = "live";
+    }
+    if (origUpdated) {
+      return origUpdated.call(this, changedProps);
+    }
   };
 });
 
@@ -86,6 +99,12 @@ customElements.whenDefined("ha-camera-stream").then((StreamClass) => {
       this.style.left = "0";
     }
 
+    Array.from(root.children).forEach((el) => {
+      if (el.tagName !== "STYLE" && (!el.classList || !el.classList.contains("go2rtc-c400-iframe"))) {
+        el.style.display = "none";
+      }
+    });
+
     let iframe = root.querySelector("iframe.go2rtc-c400-iframe");
     // Only mute & strip audio on the card preview (!this.controls).
     // When user clicks into the camera control dialog (this.controls === true), enable full controls & audio!
@@ -97,11 +116,6 @@ customElements.whenDefined("ha-camera-stream").then((StreamClass) => {
       controls: !isCardPreview,
     });
     if (!iframe) {
-      Array.from(root.children).forEach((el) => {
-        if (el.tagName !== "STYLE") {
-          el.style.display = "none";
-        }
-      });
       iframe = document.createElement("iframe");
       iframe.className = "go2rtc-c400-iframe";
       iframe.src = targetSrc;
@@ -596,8 +610,8 @@ class IotFloorplanTopologyCard extends HTMLElement {
   async _loadFloorplanSvg() {
     try {
       const [svgRes, cssRes] = await Promise.all([
-        fetch("/local/floorplan/floorplan.svg?v=16", { cache: "no-cache" }),
-        fetch("/local/floorplan/floorplan.css?v=16", { cache: "no-cache" }),
+        fetch("/local/floorplan/floorplan.svg?v=20", { cache: "no-cache" }),
+        fetch("/local/floorplan/floorplan.css?v=20", { cache: "no-cache" }),
       ]);
       const svgText = await svgRes.text();
       const cssText = await cssRes.text();
@@ -658,6 +672,7 @@ class IotFloorplanTopologyCard extends HTMLElement {
           ble_clock: "area.living_dining",
           sony_tv: "area.living_dining",
           samsung_m7: "area.study_room",
+          lollipop_camera: "area.study_room",
           roborock_vacuum: "area.storage",
           room_master: "area.bedroom_master",
           room_kitchen: "area.kitchen",
@@ -1200,14 +1215,41 @@ class IotFloorplanTopologyCard extends HTMLElement {
       `;
     } else if (devKey === "lollipop_camera") {
       const lollipopStreamUrl = getStreamUrl({ src: "lollipop", muted: true, controls: true });
+      const entityRowsHtml = dev.entities
+        .map((eid) => {
+          const st = this._getState(eid, "未連線");
+          const fname = this._getAttr(eid, "friendly_name", eid);
+          const unit = this._getAttr(eid, "unit_of_measurement", "");
+          const formattedVal = this._formatEntityValue(eid, st, unit);
+          const rowAction = eid.startsWith("button.") ? "press-btn" : "more-info";
+          return `
+            <div class="entity-row" data-action="${rowAction}" data-entity="${eid}">
+              <div>
+                <div class="ent-name">${fname}</div>
+                <div class="ent-id">${eid}</div>
+              </div>
+              <div class="ent-val">
+                <span>${formattedVal}</span>
+                <span class="ent-arrow">↗</span>
+              </div>
+            </div>
+          `;
+        })
+        .join("");
+
       const existingLollipopIframe = bodyEl.querySelector("iframe.modal-lollipop-stream");
       if (existingLollipopIframe) {
+        const entBox = bodyEl.querySelector("#lollipop-entity-list");
+        if (entBox) {
+          entBox.innerHTML = entityRowsHtml;
+          this._bindModalActions(entBox);
+        }
         return;
       }
       bodyEl.innerHTML = `
         <div class="modal-desc">${dev.description}</div>
         <div class="modal-section">
-          <div class="section-title">🍼 Lollipop 即時監控畫面 (go2rtc H.264 + AAC 零延遲直連 • 點擊右上角可開聲音)</div>
+          <div class="section-title">🍼 Lollipop 720p HD 即時監控畫面 (go2rtc H.264 + AAC 零延遲直連 • 點擊右上角可開聲音)</div>
           <div id="modal-lollipop-stream-holder" class="stream-box">
             <iframe class="modal-lollipop-stream" src="${lollipopStreamUrl}" allow="autoplay; fullscreen" style="width:100%;aspect-ratio:16/9;border:0;border-radius:10px;background:#000;display:block;"></iframe>
           </div>
@@ -1227,10 +1269,16 @@ class IotFloorplanTopologyCard extends HTMLElement {
               <span>🔊 環境噪音警報 (Noise Alert)</span>
               <small>已啟用 • 觸發閾值：80 dB</small>
             </div>
-            <div class="ctrl-btn" style="cursor:default;">
-              <span>🖧 區網 RTSP 串流資訊</span>
-              <small class="mono">192.168.31.102:554 (H.264 + AAC)</small>
+            <div class="ctrl-btn active-blue" data-action="open-dev" data-target="samsung_m7">
+              <span>🖥️ 同房間設備：Samsung M7</span>
+              <small>點擊切換至書房 32" 智慧螢幕控制</small>
             </div>
+          </div>
+        </div>
+        <div class="modal-section">
+          <div class="section-title">📊 關聯實體即時狀態 (點擊任一項目開啟 HA 原生詳細控制與歷史圖表)</div>
+          <div id="lollipop-entity-list" class="entity-list">
+            ${entityRowsHtml}
           </div>
         </div>
         <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:14px;flex-wrap:wrap;">
@@ -1363,6 +1411,14 @@ class IotFloorplanTopologyCard extends HTMLElement {
               <span>🔊 音量調大 (+)</span>
               <small>Volume Up</small>
             </button>
+            ${
+              devKey === "samsung_m7"
+                ? `<button class="ctrl-btn active-emerald" data-action="open-dev" data-target="lollipop_camera">
+                    <span>🍼 書房 Lollipop 嬰兒攝影機</span>
+                    <small>點擊開啟寶寶 (樺) 即時監控畫面</small>
+                  </button>`
+                : ""
+            }
           </div>
         </div>
       `;
