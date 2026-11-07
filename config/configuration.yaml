@@ -7,7 +7,7 @@ go2rtc:
 frontend:
   themes: !include_dir_merge_named themes
   extra_module_url:
-    - /local/c400-go2rtc.js?v=20
+    - /local/c400-go2rtc.js?v=21
 
 automation: !include automations.yaml
 script: !include scripts.yaml
@@ -80,3 +80,22 @@ homekit:
         max_fps: 20
         max_width: 864
         max_height: 480
+
+  # 書房 Lollipop 嬰兒攝影機 (樺)：go2rtc 已輸出標準 H.264 High Profile 720p，
+  # HomeKit 視訊直接 copy (0% CPU 轉碼)，僅 8kHz AAC 音訊轉 Opus (極低負載)
+  - name: "Lollipop Baby Camera"
+    port: 21065
+    mode: accessory
+    filter:
+      include_entities:
+        - camera.lollipop_baby_camera
+    entity_config:
+      camera.lollipop_baby_camera:
+        name: "寶寶樺 (書房)"
+        stream_source: "-rtsp_transport tcp -i rtsp://127.0.0.1:8554/lollipop"
+        video_codec: copy
+        support_audio: true
+        stream_count: 3
+        max_fps: 30
+        max_width: 1280
+        max_height: 720

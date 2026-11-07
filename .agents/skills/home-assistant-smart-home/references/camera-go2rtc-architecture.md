@@ -11,6 +11,8 @@
    * **韌體 RTP / H.264 封包異常與零 CPU 修復 (`-bsf:v filter_units=remove_types=0`)**：
      * Lollipop 原廠 RTSP Server 存在兩項非標準行為：(1) 在每個 RTP 封包開頭直接塞入 Annex-B 起始碼 `00 00 00 01`（導致 RTP demuxer 拆出長度為 0 的 `nal_unit_type = 0` 空 NAL 單元，使得 `go2rtc` 無法辨識 IDR Keyframe Type 5 且 MP4 `avcC` 報錯 `Invalid NAL unit size`）；(2) SDP 標頭寫死假 Baseline SPS (`Z0IAHvQCgC3I`)，但實際影像為 **1280×720 H.264 High Profile + AAC (8000Hz)**。
      * **標準設定 (`go2rtc.yaml`)**：使用 `exec:ffmpeg` 搭配 `-c:v copy -bsf:v filter_units=remove_types=0 -c:a copy`，在不進行任何視訊轉碼（0% CPU 負擔）的前提下，自動剔除 `type=0` 空 NAL 並拆出正確的 `SPS(7)`、`PPS(8)`、`IDR(5)`，使 `api/frame.jpeg?src=lollipop`、HA `/api/camera_proxy/camera.lollipop_baby_camera` 與 Chrome MSE 串流皆可秒開播放。
+   * **Apple HomeKit 橋接 (Port 21065)**：
+     * 因 `go2rtc` 已完成封包重整並輸出標準 H.264 High Profile 720p 視訊，HomeKit `entity_config` 可直接設定 `video_codec: copy`，視訊流 0% CPU 負擔直通 iPhone / HomePod，僅需極微小 CPU 將 8kHz AAC 轉換為 Opus 音訊。
    * ⚠️ **硬體供電注意**：Lollipop 的 USB 介面僅供電（無 UVC 資料傳輸），請使用獨立 5V 充電器供電，切勿插在樹莓派 4 的 USB 孔以免造成樹莓派 5V 低電壓 (`Undervoltage detected`) 斷線。
 
 ---

@@ -20,7 +20,7 @@
 [ 🍓 智慧家庭中樞：樹莓派 4 (Raspberry Pi 4 Model B) ] ◄───────────┘
    • 位置：孝親房
    • LAN IP: 192.168.31.212 | Tailscale IP: 100.113.142.12
-   • 服務：HA (8123) / go2rtc (1984, 8554) / WebSSH ttyd (7681) / HomeKit (21063, 21064) / BLE (hci0)
+   • 服務：HA (8123) / go2rtc (1984, 8554) / WebSSH ttyd (7681) / HomeKit (21063, 21064, 21065) / BLE (hci0)
 ```
 
 ---

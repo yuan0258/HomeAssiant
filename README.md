@@ -31,7 +31,7 @@
      - Home Assistant (Port 8123)
      - go2rtc 2.5K 串流伺服器 (Port 1984 / RTSP 8554)
      - ttyd 一鍵 WebSSH 終端機 (Port 7681)
-     - Apple HomeKit Bridges (Port 21063 / 21064)
+     - Apple HomeKit Bridges (Port 21063 / 21064 / 21065)
      - Bluetooth Passive BLE Gateway (hci0)
 ```
 

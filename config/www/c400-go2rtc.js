@@ -211,7 +211,7 @@ const DEVICE_CATALOG = {
     model: "Raspberry Pi 4 Model B",
     deviceId: "d477379a0f476cc653d901db9fd87102",
     primaryEntity: "sensor.system_monitor_processor_temperature",
-    description: "運行 Home Assistant (8123)、go2rtc 2.5K 串流引擎 (1984/8554)、HomeKit Bridge (21063/21064) 與藍牙 BLE 閘道 (hci0)。",
+    description: "運行 Home Assistant (8123)、go2rtc 2.5K 串流引擎 (1984/8554)、HomeKit Bridge (21063/21064/21065) 與藍牙 BLE 閘道 (hci0)。",
     entities: [
       "sensor.system_monitor_processor_temperature",
       "sensor.system_monitor_processor_use",
@@ -305,11 +305,11 @@ const DEVICE_CATALOG = {
     name: "Lollipop 嬰兒攝影機 (書房 - 樺)",
     room: "書房 Study",
     ip: "192.168.31.102 (MAC: 10:D0:7A:B4:A7:D4)",
-    connType: "go2rtc 區網 RTSP 直連 (Port 554)",
+    connType: "go2rtc 直連 + Apple HomeKit (Port 21065)",
     model: "lollipop-basic-162DEC40426A • ID: m3YYPO7gda",
     deviceId: "27b3754f9afed55222e60056f214d214",
     primaryEntity: "camera.lollipop_baby_camera",
-    description: "書房智慧嬰兒監視器（寶寶：樺，生日 2025-04-12）。透過 go2rtc 直接拉取區網 192.168.31.102:554 原生 H.264 視訊與 AAC 音訊串流，具備哭聲偵測與環境噪音監測 (閾值 80dB)。",
+    description: "書房智慧嬰兒監視器（寶寶：樺，生日 2025-04-12）。透過 go2rtc 直接拉取區網 192.168.31.102:554 原生 H.264 視訊與 AAC 音訊串流，並已接入 Apple HomeKit (Port 21065 零 CPU 轉碼)，具備哭聲偵測與環境噪音監測 (閾值 80dB)。",
     entities: [
       "camera.lollipop_baby_camera"
     ]
