@@ -1,14 +1,15 @@
 # 小米 C400 2.5K 串流、防黑屏閃爍與總覽靜音架構指南
 
-## 1. 串流架構概覽 (`go2rtc`)
-小米智慧攝影機 C400 (`192.168.31.104`) 原生輸出 2.5K (2560×1440) H.265 視訊流與 PCM/AAC 音訊。
-在樹莓派 4 上透過 `go2rtc` (`192.168.31.212:1984` / RTSP `8554`) 分為兩條串流通道：
-
-1. **`c400_hd` (網頁端 2.5K 原生直通，零 CPU 負載)**：
-   * 直接拉取 C400 RTSP H.265 主碼流並轉換音訊為 AAC，設定 `preload: c400_hd: ""` 保持 RTSP 長連線。
+## 1. 雙攝影機串流架構概覽 (`go2rtc`)
+1. **客廳：小米智慧攝影機 C400 (`192.168.31.104`, `camera.chuangmi_039c04_c643_camera_control`)**：
+   * 原生輸出 2.5K (2560×1440) H.265 視訊流與 AAC 音訊 (`src=c400_hd`)。
    * 因為不做 H.264 影像轉碼，樹莓派 4 待機 CPU 僅約 `5%~6%`，點擊開啟畫面時毫秒級出圖。
-2. **`c400` (Apple HomeKit 按需 H.264 轉碼)**：
-   * 僅當 iPhone / HomePod「家庭」App 請求畫面時，才按需啟動 `ffmpeg` H.264 轉碼（**切勿在 `go2rtc.yaml` 對 `c400` 啟用 `preload`，否則會導致樹莓派 4 24 小時消耗 25%+ CPU 並升溫至 72°C 以上**）。
+   * `c400` 通道僅在 iPhone / HomePod「家庭」App 請求畫面時按需啟動 `ffmpeg` H.264 轉碼。
+2. **書房：Lollipop 嬰兒攝影機 - 樺 (`192.168.31.102`, `camera.lollipop_baby_camera`)**：
+   * 主機名稱：`lollipop-basic-162DEC40426A.local`（MAC: `10:D0:7A:B4:A7:D4`）。
+   * 區網 RTSP 路徑計算規則：`rtsp://192.168.31.102:554/live/<MD5(cam_setting.objectId)>/ch00_0`（其中 `cam_setting.objectId = RCLpTK33BN`）。
+   * 原生輸出 H.264 (`Baseline`) + AAC (`8000Hz`)，在 `go2rtc.yaml` 設定為 `lollipop` 並啟用 `preload`，零 CPU 轉碼消耗！
+   * ⚠️ **硬體供電注意**：Lollipop 的 USB 介面僅供電（無 UVC 資料傳輸），請使用獨立 5V 充電器供電，切勿插在樹莓派 4 的 USB 孔以免造成樹莓派 5V 低電壓 (`Undervoltage detected`) 斷線。
 
 ---
 

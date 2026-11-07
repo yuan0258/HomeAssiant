@@ -1,4 +1,9 @@
 const TARGET_ENTITY = "camera.chuangmi_039c04_c643_camera_control";
+const LOLLIPOP_ENTITY = "camera.lollipop_baby_camera";
+const CAMERA_STREAM_MAP = {
+  [TARGET_ENTITY]: "c400_hd",
+  [LOLLIPOP_ENTITY]: "lollipop",
+};
 
 function getStreamUrl(opts = {}) {
   const host = window.location.hostname || "192.168.31.212";
@@ -18,14 +23,12 @@ function getStreamUrl(opts = {}) {
   return `http://${host}:1984/stream.html?${params.toString()}`;
 }
 
-// 1. Force hui-picture-entity-card for C400 to always use camera_view: "live"
+// 1. Force hui-picture-entity-card for C400 & Lollipop to always use camera_view: "live"
 customElements.whenDefined("hui-picture-entity-card").then((CardClass) => {
   const origSetConfig = CardClass.prototype.setConfig;
   CardClass.prototype.setConfig = function (config) {
-    if (
-      config &&
-      (config.entity === TARGET_ENTITY || config.camera_image === TARGET_ENTITY)
-    ) {
+    const ent = config && (config.entity || config.camera_image);
+    if (ent && CAMERA_STREAM_MAP[ent]) {
       config = {
         ...config,
         camera_view: "live",
@@ -37,11 +40,12 @@ customElements.whenDefined("hui-picture-entity-card").then((CardClass) => {
   };
 });
 
-// 2. Patch ha-camera-stream to directly embed go2rtc stream.html?src=c400_hd
+// 2. Patch ha-camera-stream to directly embed go2rtc stream.html for C400 & Lollipop
 customElements.whenDefined("ha-camera-stream").then((StreamClass) => {
   const origGetCapabilities = StreamClass.prototype._getCapabilities;
   StreamClass.prototype._getCapabilities = async function () {
-    if (this.stateObj && this.stateObj.entity_id === TARGET_ENTITY) {
+    const ent = this.stateObj && this.stateObj.entity_id;
+    if (ent && CAMERA_STREAM_MAP[ent]) {
       this._capabilities = { frontend_stream_types: [] };
       return;
     }
@@ -50,7 +54,8 @@ customElements.whenDefined("ha-camera-stream").then((StreamClass) => {
 
   const origGetPosterUrl = StreamClass.prototype._getPosterUrl;
   StreamClass.prototype._getPosterUrl = async function () {
-    if (this.stateObj && this.stateObj.entity_id === TARGET_ENTITY) {
+    const ent = this.stateObj && this.stateObj.entity_id;
+    if (ent && CAMERA_STREAM_MAP[ent]) {
       return;
     }
     return origGetPosterUrl ? origGetPosterUrl.apply(this, arguments) : undefined;
@@ -61,7 +66,9 @@ customElements.whenDefined("ha-camera-stream").then((StreamClass) => {
     if (origUpdated) {
       origUpdated.call(this, changedProps);
     }
-    if (!this.stateObj || this.stateObj.entity_id !== TARGET_ENTITY) {
+    const ent = this.stateObj && this.stateObj.entity_id;
+    const streamName = ent && CAMERA_STREAM_MAP[ent];
+    if (!streamName) {
       return;
     }
     const root = this.shadowRoot || this.renderRoot;
@@ -84,6 +91,7 @@ customElements.whenDefined("ha-camera-stream").then((StreamClass) => {
     // When user clicks into the camera control dialog (this.controls === true), enable full controls & audio!
     const isCardPreview = !this.controls;
     const targetSrc = getStreamUrl({
+      src: streamName,
       videoOnly: isCardPreview,
       muted: true,
       controls: !isCardPreview,
@@ -269,11 +277,27 @@ const DEVICE_CATALOG = {
     model: "Samsung M7 32\" (LS32AM700UCXZW)",
     deviceId: "0827c5f834211437310ecb523520b4cb",
     primaryEntity: "media_player.monitor_samsung_m7_32",
-    description: "書房 32 吋 4K 智慧聯網螢幕，支援遠端電源開關、音量調整與媒體投放控制。",
+    description: "書房 32 吋 4K 智慧聯網螢幕，支援遠端電源開關、音量調整與媒體投放控制（同房間另有 Lollipop 嬰兒攝影機 192.168.31.102 駐點守護）。",
     entities: [
       "media_player.monitor_samsung_m7_32_ls32am700ucxzw",
       "media_player.monitor_samsung_m7_32",
-      "remote.monitor_samsung_m7_32_ls32am700ucxzw"
+      "remote.monitor_samsung_m7_32_ls32am700ucxzw",
+      "camera.lollipop_baby_camera"
+    ]
+  },
+  lollipop_camera: {
+    id: "lollipop_camera",
+    icon: "🍼",
+    name: "Lollipop 嬰兒攝影機 (書房 - 樺)",
+    room: "書房 Study",
+    ip: "192.168.31.102 (MAC: 10:D0:7A:B4:A7:D4)",
+    connType: "go2rtc 區網 RTSP 直連 (Port 554)",
+    model: "lollipop-basic-162DEC40426A • ID: m3YYPO7gda",
+    deviceId: "27b3754f9afed55222e60056f214d214",
+    primaryEntity: "camera.lollipop_baby_camera",
+    description: "書房智慧嬰兒監視器（寶寶：樺，生日 2025-04-12）。透過 go2rtc 直接拉取區網 192.168.31.102:554 原生 H.264 視訊與 AAC 音訊串流，具備哭聲偵測與環境噪音監測 (閾值 80dB)。",
+    entities: [
+      "camera.lollipop_baby_camera"
     ]
   },
   ble_clock: {
@@ -780,6 +804,9 @@ class IotFloorplanTopologyCard extends HTMLElement {
     const hpState = this._getState("media_player.wo_shi_wo_shi", "off");
     const hpActive = !["off", "standby", "unavailable", "unknown"].includes(hpState);
     setElClass("media_player.wo_shi_wo_shi", hpActive ? "media-on" : "media-off", ["media-"]);
+
+    // 8. Lollipop Baby Camera (Study)
+    setElClass("camera.lollipop_baby_camera", "camera-on", ["camera-"]);
   }
 
   _updateTopologyBadges() {
@@ -844,6 +871,8 @@ class IotFloorplanTopologyCard extends HTMLElement {
       tvOn ? `🟢 電視開啟 (${tvState2 === "playing" ? "播放中" : "已連線"})` : "⚪ 電視待機中",
       tvOn ? "pill-emerald" : "pill-amber"
     );
+
+    setBadge("badge-lollipop", "🟢 go2rtc 直連 (串流中)", "pill-emerald");
 
     const vacBat = this._getState("sensor.rockrobo_v1_6536_battery_level", "100");
     const vacStatus = this._getState("vacuum.rockrobo_v1_6536_robot_cleaner", "docked");
@@ -1162,9 +1191,58 @@ class IotFloorplanTopologyCard extends HTMLElement {
               <span>🖥️ Samsung M7 螢幕</span>
               <small class="mono">192.168.31.97 • 書房</small>
             </div>
+            <div class="ctrl-btn active-emerald" data-action="open-dev" data-target="lollipop_camera">
+              <span>🍼 Lollipop 嬰兒攝影機</span>
+              <small class="mono">192.168.31.102 • 書房 (樺)</small>
+            </div>
           </div>
         </div>
       `;
+    } else if (devKey === "lollipop_camera") {
+      const lollipopStreamUrl = getStreamUrl({ src: "lollipop", muted: true, controls: true });
+      const existingLollipopIframe = bodyEl.querySelector("iframe.modal-lollipop-stream");
+      if (existingLollipopIframe) {
+        return;
+      }
+      bodyEl.innerHTML = `
+        <div class="modal-desc">${dev.description}</div>
+        <div class="modal-section">
+          <div class="section-title">🍼 Lollipop 即時監控畫面 (go2rtc H.264 + AAC 零延遲直連 • 點擊右上角可開聲音)</div>
+          <div id="modal-lollipop-stream-holder" class="stream-box">
+            <iframe class="modal-lollipop-stream" src="${lollipopStreamUrl}" allow="autoplay; fullscreen" style="width:100%;aspect-ratio:16/9;border:0;border-radius:10px;background:#000;display:block;"></iframe>
+          </div>
+        </div>
+        <div class="modal-section">
+          <div class="section-title">👶 嬰兒守護與感測設定摘要 (Lollipop Smart Baby Monitor)</div>
+          <div class="control-grid">
+            <div class="ctrl-btn active-emerald" style="cursor:default;">
+              <span>👶 守護寶寶資訊</span>
+              <small>小名：樺 • 生日：2025-04-12</small>
+            </div>
+            <div class="ctrl-btn active-blue" style="cursor:default;">
+              <span>😭 哭聲偵測 (Cry Detection)</span>
+              <small>已啟用 • 靈敏度：中 (Level 1)</small>
+            </div>
+            <div class="ctrl-btn active-amber" style="cursor:default;">
+              <span>🔊 環境噪音警報 (Noise Alert)</span>
+              <small>已啟用 • 觸發閾值：80 dB</small>
+            </div>
+            <div class="ctrl-btn" style="cursor:default;">
+              <span>🖧 區網 RTSP 串流資訊</span>
+              <small class="mono">192.168.31.102:554 (H.264 + AAC)</small>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:14px;flex-wrap:wrap;">
+          <a class="action-link-btn" href="${getStreamUrl({ src: "lollipop" })}" target="_blank">🔗 全螢幕獨立開啟 Lollipop 串流</a>
+          <a class="action-link-btn" href="/config/devices/device/${dev.deviceId}" target="_top">⚙️ 設備設定</a>
+          <button class="action-primary-btn" data-action="more-info" data-entity="${dev.primaryEntity}">
+            🎛️ HA 原生控制視窗
+          </button>
+        </div>
+      `;
+      this._bindModalActions(bodyEl);
+      return;
     } else if (devKey === "wan_internet" || devKey === "cht_modem") {
       const tsIp = this._getState("sensor.system_monitor_ipv4_address_tailscale0", "100.113.142.12");
       const lanIp = this._getState("sensor.system_monitor_ipv4_address_wlan0", "192.168.31.212");
@@ -2201,6 +2279,18 @@ class IotFloorplanTopologyCard extends HTMLElement {
                   </div>
                 </div>
                 <span id="badge-sony-tv" class="status-pill pill-emerald">已連動</span>
+              </div>
+
+              <!-- Lollipop Baby Camera -->
+              <div class="topo-node" data-device="lollipop_camera">
+                <div class="topo-node-left">
+                  <span class="topo-icon">🍼</span>
+                  <div>
+                    <div class="topo-title">Lollipop 嬰兒攝影機 (書房 - 樺)</div>
+                    <div class="topo-sub mono">192.168.31.102 (Port 554 RTSP)</div>
+                  </div>
+                </div>
+                <span id="badge-lollipop" class="status-pill pill-emerald">go2rtc 直連</span>
               </div>
             </div>
 

@@ -58,5 +58,6 @@
 | `homepod_mini` | Apple HomePod Mini | 小孩房 (`xiao_hai_fang`) | `192.168.31.229` | HomePod Mini | `644f76d707573bd40f743ce5ece7a71f` | `media_player.wo_shi` |
 | `bedside_lamp` | 米家床頭燈 2 | 小孩房 (`xiao_hai_fang`) | `192.168.31.143` | `yeelink.light.bslamp2` | `9545a1bc3603b71eac9d249f758baac6` | `light.yeelink_bslamp2_2a87_light` |
 | `samsung_m7` | Samsung M7 32吋智慧螢幕 | 書房 (`shu_fang`) | `192.168.31.97` | `LS32AM700UCXZW` | `0827c5f834211437310ecb523520b4cb` | `media_player.monitor_samsung_m7_32` |
+| `lollipop_camera` | Lollipop 嬰兒攝影機 (書房 - 樺) | 書房 (`shu_fang`) | `192.168.31.102` (`10:D0:7A:B4:A7:D4`) | `lollipop-basic-162DEC40426A` | `27b3754f9afed55222e60056f214d214` | `camera.lollipop_baby_camera` |
 | `roborock_vacuum` | 米家掃地機器人 (1代) | 儲藏室 (`chu_cang_shi`) | `192.168.31.240` (Cloud Bridge) | `rockrobo.vacuum.v1` | `790059e23c7ab0a1ab980cc5dc6e6585` | `vacuum.rockrobo_v1_6536_robot_cleaner` |
 | `iphone_tailscale` | iPhone 遠端連線 | 行動端 | Tailscale `100.78.218.46` | `iPhone19,7` | `ee70e807b3a7618c010ee3e520d13f46` | `device_tracker.iphone` |

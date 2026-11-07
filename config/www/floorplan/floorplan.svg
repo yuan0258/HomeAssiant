@@ -388,13 +388,19 @@
       <text id="sensor.rockrobo_v1_6536_battery_level" class="ha-entity ha-battery" data-device="roborock_vacuum" x="707" y="553" fill="#a3e635" font-family="monospace" font-size="12" font-weight="bold" text-anchor="middle">🔋99%</text>
     </g>
 
-    <!-- ⑤ 書房：Samsung M7 32" 智慧螢幕 -->
+    <!-- ⑤ 書房：Samsung M7 32" 智慧螢幕 + Lollipop 嬰兒攝影機 (樺) -->
     <g id="media_player.monitor_samsung_m7_32" class="ha-entity ha-monitor" data-device="samsung_m7">
-      <rect x="315" y="626" width="64" height="38" rx="4" fill="#1e293b" stroke="#38bdf8" stroke-width="2" />
-      <rect x="320" y="631" width="54" height="28" rx="2" fill="#0f172a" class="screen" />
-      <line x1="347" y1="664" x2="347" y2="672" stroke="#94a3b8" stroke-width="2" />
-      <line x1="335" y1="673" x2="359" y2="673" stroke="#94a3b8" stroke-width="2" />
-      <text x="347" y="649" font-size="11" fill="#e2e8f0" font-family="monospace" font-weight="bold" text-anchor="middle" pointer-events="none">M7 32"</text>
+      <rect x="292" y="626" width="64" height="38" rx="4" fill="#1e293b" stroke="#38bdf8" stroke-width="2" />
+      <rect x="297" y="631" width="54" height="28" rx="2" fill="#0f172a" class="screen" />
+      <line x1="324" y1="664" x2="324" y2="672" stroke="#94a3b8" stroke-width="2" />
+      <line x1="312" y1="673" x2="336" y2="673" stroke="#94a3b8" stroke-width="2" />
+      <text x="324" y="649" font-size="11" fill="#e2e8f0" font-family="monospace" font-weight="bold" text-anchor="middle" pointer-events="none">M7 32"</text>
+    </g>
+
+    <g id="camera.lollipop_baby_camera" class="ha-entity ha-camera" data-device="lollipop_camera">
+      <circle cx="402" cy="645" r="16" fill="#1e293b" stroke="#f472b6" stroke-width="2.2" />
+      <text x="402" y="650" font-size="14" text-anchor="middle" pointer-events="none">🍼</text>
+      <text x="402" y="673" fill="#f9a8d4" font-family="sans-serif" font-size="9.5" font-weight="bold" text-anchor="middle" pointer-events="none">Lollipop</text>
     </g>
 
   </g>
