@@ -7,196 +7,262 @@
      id="floorplan-root">
 
   <defs>
-    <!-- 燈光發光濾鏡 -->
+    <!-- 1. 3D 牆體專用立體投射陰影 (營造俯瞰立體深度) -->
+    <filter id="wall-shadow-3d" x="-20%" y="-20%" width="150%" height="150%">
+      <feDropShadow dx="3" dy="5" stdDeviation="4.5" flood-color="#000000" flood-opacity="0.75" />
+    </filter>
+
+    <!-- 2. 家具立體自然微投影 -->
+    <filter id="furniture-shadow-3d" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="2" dy="3.5" stdDeviation="3" flood-color="#020617" flood-opacity="0.6" />
+    </filter>
+
+    <!-- 3. 燈光發光濾鏡 -->
     <filter id="glow-warm" x="-20%" y="-20%" width="140%" height="140%">
       <feGaussianBlur stdDeviation="12" result="blur" />
       <feComposite in="SourceGraphic" in2="blur" operator="over" />
     </filter>
-    <!-- 攝影機可視角漸層 -->
-    <linearGradient id="cam-fov-grad" x1="100%" y1="20%" x2="0%" y2="80%">
-      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.32" />
+
+    <!-- 4. C400 客廳右下角超廣角可視角漸層 (朝向左上方照射全客廳與玄關) -->
+    <linearGradient id="cam-fov-grad-bottom-right" x1="100%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.38" />
+      <stop offset="50%" stop-color="#38bdf8" stop-opacity="0.14" />
       <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.0" />
     </linearGradient>
+
+    <!-- 5. 書房 Lollipop 嬰兒攝影機光錐漸層 -->
     <linearGradient id="lollipop-fov-grad" x1="100%" y1="90%" x2="10%" y2="10%">
       <stop offset="0%" stop-color="#f472b6" stop-opacity="0.28" />
       <stop offset="100%" stop-color="#f472b6" stop-opacity="0.0" />
     </linearGradient>
-    <!-- 網格填充樣式 (櫃體 X 線條背景用) -->
+
+    <!-- 6. 3D 上帝視角：客餐廳精細深色實木拼木地板 (Wood Parquet) -->
+    <pattern id="wood-parquet" width="40" height="80" patternUnits="userSpaceOnUse">
+      <rect width="40" height="80" fill="#151e2e" />
+      <line x1="0" y1="0" x2="40" y2="0" stroke="#1e293b" stroke-width="1.2" />
+      <line x1="0" y1="40" x2="40" y2="40" stroke="#1e293b" stroke-width="1.2" />
+      <line x1="20" y1="0" x2="20" y2="40" stroke="#1e293b" stroke-width="0.8" opacity="0.6" />
+      <line x1="0" y1="40" x2="0" y2="80" stroke="#1e293b" stroke-width="0.8" opacity="0.6" />
+      <line x1="40" y1="40" x2="40" y2="80" stroke="#1e293b" stroke-width="0.8" opacity="0.6" />
+    </pattern>
+
+    <!-- 7. 3D 上帝視角：衛浴與廚房防滑磁磚紋理 -->
+    <pattern id="tile-stone" width="16" height="16" patternUnits="userSpaceOnUse">
+      <rect width="16" height="16" fill="#131c2b" />
+      <rect x="1" y="1" width="14" height="14" fill="#192436" rx="1.5" />
+    </pattern>
+
+    <!-- 8. 櫃體與固定木作 X 紋理 -->
     <pattern id="diagonal-hatch" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
       <line x1="0" y1="0" x2="0" y2="10" stroke="#475569" stroke-width="1" opacity="0.35" />
     </pattern>
   </defs>
 
-  <!-- ==================== 1. 底層背景 ==================== -->
+  <!-- ==================== 1. 底層 3D 上帝視角畫布背景 ==================== -->
   <g id="layer-background" inkscape:groupmode="layer" inkscape:label="01_Background">
-    <rect id="bg-canvas" x="125" y="55" width="860" height="725" fill="#0f172a" rx="16" />
-    <text x="965" y="762" fill="#64748b" font-family="monospace" font-size="11" text-anchor="end">點擊任一房間或設備即可查看資訊與控制</text>
+    <rect id="bg-canvas" x="125" y="55" width="860" height="725" fill="#0b111e" rx="20" />
+    <!-- 展台光照光暈 -->
+    <circle cx="500" cy="400" r="450" fill="#1e293b" opacity="0.18" pointer-events="none" />
+    <text x="965" y="762" fill="#475569" font-family="sans-serif" font-size="11" text-anchor="end">全屋 3D 建築俯瞰視角 • 點擊任一房間或設備查看資訊與控制</text>
   </g>
 
-  <!-- ==================== 2. 房間色塊層 (隨燈光/感測器變色) ==================== -->
+  <!-- ==================== 2. 房間色塊底層 (點擊/連動高亮專用) ==================== -->
   <g id="layer-rooms" inkscape:groupmode="layer" inkscape:label="02_Rooms_Interactive">
-    <!-- 左上：小孩房 / 次臥 A (155*188) -->
-    <rect id="area.bedroom_northwest" class="ha-room" data-device="bedside_lamp" x="150" y="80" width="210" height="185" fill="#1e293b" />
+    <!-- 左上：小孩房 (次臥 A) -->
+    <rect id="area.bedroom_northwest" class="ha-room" data-device="bedside_lamp" x="150" y="80" width="210" height="185" fill="#131c2b" />
     
-    <!-- 左中：孝親房 / 次臥 B (155*188) -->
-    <rect id="area.bedroom_southwest" class="ha-room" data-device="xiaomi_router" x="150" y="265" width="210" height="185" fill="#1e293b" />
+    <!-- 左中：孝親房 (次臥 B) -->
+    <rect id="area.bedroom_southwest" class="ha-room" data-device="xiaomi_router" x="150" y="265" width="210" height="185" fill="#131c2b" />
     
-    <!-- 左下與中軸：玄關與走廊 -->
-    <path id="area.hallway" class="ha-room" data-device="room_hallway" d="M 360,200 L 430,200 L 430,560 L 365,560 L 365,450 L 360,450 Z" fill="#1e293b" />
-    <rect id="area.kitchen" class="ha-room" data-device="room_kitchen" x="150" y="450" width="215" height="110" fill="#1e293b" />
+    <!-- 中央與左下動線：大門入口、玄關與中央走廊 (完全涵蓋 y=200~290 走道，徹底分離客廳與主臥) -->
+    <path id="area.hallway" class="ha-room" data-device="room_hallway" d="M 360,200 L 600,200 L 600,290 L 430,290 L 430,560 L 365,560 L 365,450 L 360,450 Z" fill="#111827" />
+    
+    <!-- 廚房區 -->
+    <rect id="area.kitchen" class="ha-room" data-device="room_kitchen" x="150" y="450" width="215" height="110" fill="#131c2b" />
     
     <!-- 中上左：客衛浴 -->
-    <rect id="area.bathroom_guest" class="ha-room" data-device="room_bath_guest" x="330" y="80" width="135" height="120" fill="#1e293b" />
+    <rect id="area.bathroom_guest" class="ha-room" data-device="room_bath_guest" x="330" y="80" width="135" height="120" fill="#131c2b" />
     
-    <!-- 中上右：主衛浴 / 更衣區 -->
-    <rect id="area.bathroom_master" class="ha-room" data-device="room_bath_master" x="465" y="80" width="135" height="120" fill="#1e293b" />
+    <!-- 中上右：主衛浴 -->
+    <rect id="area.bathroom_master" class="ha-room" data-device="room_bath_master" x="465" y="80" width="135" height="120" fill="#131c2b" />
     
-    <!-- 右上：主臥室 (180*188) -->
-    <rect id="area.bedroom_master" class="ha-room" data-device="room_master" x="600" y="80" width="200" height="210" fill="#1e293b" />
+    <!-- 右上：主臥室 (上緣 y=80，下緣精確在 y=290 主臥隔間牆，絕不與客廳混淆) -->
+    <rect id="area.bedroom_master" class="ha-room" data-device="room_master" x="600" y="80" width="200" height="210" fill="#131c2b" />
     
-    <!-- 中右大區：客廳與餐廳 (Living & Dining) -->
-    <path id="area.living_dining" class="ha-room" data-device="c400_camera" d="M 430,200 L 600,200 L 600,290 L 800,290 L 800,490 L 565,490 L 565,530 L 430,530 Z" fill="#1e293b" />
+    <!-- 中右：客廳與餐廳 (Living & Dining) —— 上方邊界齊平 y=290，完全不框到主臥室！ -->
+    <path id="area.living_dining" class="ha-room" data-device="c400_camera" d="M 430,290 L 800,290 L 800,490 L 565,490 L 565,530 L 430,530 Z" fill="#162032" />
     
-    <!-- 右下：廚房 / 儲藏室區 -->
-    <rect id="area.storage" class="ha-room" data-device="roborock_vacuum" x="565" y="490" width="235" height="110" fill="#1e293b" />
+    <!-- 右下：儲藏室 -->
+    <rect id="area.storage" class="ha-room" data-device="roborock_vacuum" x="565" y="490" width="235" height="110" fill="#131c2b" />
     
-    <!-- 下方突出：多功能室 / 書房 -->
-    <rect id="area.study_room" class="ha-room" data-device="samsung_m7" x="260" y="560" width="190" height="200" fill="#1e293b" />
+    <!-- 下方突出：書房 (Study) -->
+    <rect id="area.study_room" class="ha-room" data-device="samsung_m7" x="260" y="560" width="190" height="200" fill="#131c2b" />
   </g>
 
-  <!-- ==================== 3. 家具與固定裝置層 ==================== -->
-  <g id="layer-furniture" inkscape:groupmode="layer" inkscape:label="03_Furniture_Entities" stroke="#64748b" stroke-width="1.5" fill="#0f172a">
+  <!-- ==================== 2B. 3D 地板材質層 (加強上帝視角真實感) ==================== -->
+  <g id="layer-floor-textures" pointer-events="none" opacity="0.38">
+    <!-- 客餐廳木質地板 -->
+    <path d="M 430,290 L 800,290 L 800,490 L 565,490 L 565,530 L 430,530 Z" fill="url(#wood-parquet)" />
+    <!-- 衛浴磁磚 -->
+    <rect x="330" y="80" width="135" height="120" fill="url(#tile-stone)" />
+    <rect x="465" y="80" width="135" height="120" fill="url(#tile-stone)" />
+    <!-- 廚房地磚 -->
+    <rect x="150" y="450" width="215" height="110" fill="url(#tile-stone)" />
+    <!-- 書房木地板 -->
+    <rect x="260" y="560" width="190" height="200" fill="url(#wood-parquet)" />
+  </g>
+
+  <!-- ==================== 3. 3D 立體家具與微縮模型層 (含立體向下投影) ==================== -->
+  <g id="layer-furniture" filter="url(#furniture-shadow-3d)" inkscape:groupmode="layer" inkscape:label="03_Furniture_Entities" stroke="#64748b" stroke-width="1.4" fill="#1e293b">
     
-    <!-- ===== 左上小孩房 (155*188) ===== -->
+    <!-- ===== ① 左上小孩房 (155*188) ===== -->
     <g id="furniture.bed_nw">
-      <rect x="175" y="88" width="95" height="106" rx="3" fill="#1e293b" stroke="#94a3b8" />
-      <rect x="183" y="94" width="36" height="18" rx="2" fill="#334155" />
-      <rect x="226" y="94" width="36" height="18" rx="2" fill="#334155" />
-      <path d="M 175,122 L 270,122 L 235,140 L 175,140 Z" fill="#334155" opacity="0.6" />
+      <!-- 床架與床墊 -->
+      <rect x="175" y="88" width="95" height="106" rx="4" fill="#1e293b" stroke="#94a3b8" stroke-width="1.5" />
+      <!-- 立體床頭靠背 -->
+      <rect x="175" y="88" width="95" height="10" rx="2" fill="#334155" stroke="#64748b" />
+      <!-- 雙枕頭 -->
+      <rect x="183" y="102" width="36" height="18" rx="3" fill="#475569" stroke="#64748b" />
+      <rect x="226" y="102" width="36" height="18" rx="3" fill="#475569" stroke="#64748b" />
+      <!-- 蓬鬆被單折線 -->
+      <path d="M 175,128 L 270,128 L 235,145 L 175,145 Z" fill="#334155" opacity="0.75" />
       <text x="222" y="184" fill="#94a3b8" font-family="monospace" font-size="9.5" text-anchor="middle" stroke="none">155*188</text>
     </g>
     <g id="furniture.wardrobe_nw">
-      <rect x="295" y="88" width="35" height="106" fill="url(#diagonal-hatch)" />
+      <rect x="295" y="88" width="35" height="106" rx="2" fill="url(#diagonal-hatch)" />
       <line x1="295" y1="88" x2="330" y2="194" stroke="#475569" stroke-width="1" />
       <line x1="330" y1="88" x2="295" y2="194" stroke="#475569" stroke-width="1" />
     </g>
 
-    <!-- ===== 左中孝親房 / 次臥 B (155*188) ===== -->
+    <!-- ===== ② 左中孝親房 (155*188) ===== -->
     <g id="furniture.bed_sw">
-      <rect x="195" y="275" width="95" height="110" rx="3" fill="#1e293b" stroke="#94a3b8" />
-      <rect x="203" y="281" width="36" height="20" rx="2" fill="#334155" />
-      <rect x="246" y="281" width="36" height="20" rx="2" fill="#334155" />
-      <path d="M 195,313 L 290,313 L 255,333 L 195,333 Z" fill="#334155" opacity="0.6" />
+      <rect x="195" y="275" width="95" height="110" rx="4" fill="#1e293b" stroke="#94a3b8" stroke-width="1.5" />
+      <rect x="195" y="275" width="95" height="10" rx="2" fill="#334155" stroke="#64748b" />
+      <rect x="203" y="289" width="36" height="20" rx="3" fill="#475569" stroke="#64748b" />
+      <rect x="246" y="289" width="36" height="20" rx="3" fill="#475569" stroke="#64748b" />
+      <path d="M 195,318 L 290,318 L 255,338 L 195,338 Z" fill="#334155" opacity="0.75" />
       <text x="242" y="372" fill="#94a3b8" font-family="monospace" font-size="9.5" text-anchor="middle" stroke="none">155*188</text>
     </g>
     <g id="furniture.wardrobe_sw">
-      <rect x="325" y="275" width="35" height="110" fill="url(#diagonal-hatch)" />
+      <rect x="325" y="275" width="35" height="110" rx="2" fill="url(#diagonal-hatch)" />
       <line x1="325" y1="275" x2="360" y2="385" stroke="#475569" stroke-width="1" />
       <line x1="360" y1="275" x2="325" y2="385" stroke="#475569" stroke-width="1" />
     </g>
 
-    <!-- ===== 右上主臥室 (180*188) ===== -->
+    <!-- ===== ③ 右上主臥室 (180*188 加大床) ===== -->
     <g id="furniture.bed_master">
-      <rect x="645" y="90" width="110" height="115" rx="3" fill="#1e293b" stroke="#94a3b8" />
-      <rect x="655" y="96" width="40" height="20" rx="2" fill="#334155" />
-      <rect x="705" y="96" width="40" height="20" rx="2" fill="#334155" />
-      <path d="M 645,128 L 755,128 L 710,150 L 645,150 Z" fill="#334155" opacity="0.6" />
-      <text x="700" y="182" fill="#94a3b8" font-family="monospace" font-size="10" text-anchor="middle" stroke="none">180*188</text>
+      <rect x="645" y="90" width="110" height="118" rx="4" fill="#1e293b" stroke="#94a3b8" stroke-width="1.6" />
+      <!-- 立體實木床頭板 -->
+      <rect x="645" y="90" width="110" height="12" rx="2" fill="#334155" stroke="#64748b" />
+      <!-- 加大雙枕頭 -->
+      <rect x="655" y="106" width="40" height="20" rx="3" fill="#475569" stroke="#64748b" />
+      <rect x="705" y="106" width="40" height="20" rx="3" fill="#475569" stroke="#64748b" />
+      <!-- 柔和被毯 -->
+      <path d="M 645,134 L 755,134 L 710,156 L 645,156 Z" fill="#334155" opacity="0.75" />
+      <text x="700" y="184" fill="#94a3b8" font-family="monospace" font-size="10" text-anchor="middle" stroke="none">180*188</text>
     </g>
-    <!-- 主臥下方一整排衣櫃 -->
+    <!-- 主臥室一整排系統衣櫃 (位在主臥室內 y=248~286，下方有牆壁阻隔客廳) -->
     <g id="furniture.wardrobe_master">
-      <rect x="600" y="248" width="195" height="38" fill="#1e293b" />
+      <rect x="600" y="248" width="195" height="38" fill="#1e293b" stroke="#64748b" />
       <polyline points="605,283 618,250 631,283 644,250 657,283 670,250 683,283 696,250 709,283 722,250 735,283 748,250 761,283 774,250 787,283" fill="none" stroke="#64748b" stroke-width="1.2" />
     </g>
-    <!-- 走廊上方收納櫃 -->
+    <!-- 走廊側邊玄關櫃 -->
     <g id="furniture.cabinet_hall">
-      <rect x="440" y="260" width="155" height="25" fill="#1e293b" />
+      <rect x="440" y="260" width="155" height="25" rx="2" fill="#1e293b" stroke="#64748b" />
       <line x1="440" y1="272" x2="595" y2="272" stroke="#475569" stroke-width="1" />
-      <rect x="570" y="242" width="22" height="18" fill="#1e293b" />
     </g>
 
-    <!-- ===== 餐廳與客廳區 ===== -->
+    <!-- ===== ④ 餐廳與客廳區 (立體沙發組與餐桌) ===== -->
     <!-- 餐邊櫃 (X線) -->
     <g id="furniture.dining_cabinet">
-      <rect x="435" y="295" width="160" height="32" fill="url(#diagonal-hatch)" />
-      <line x1="435" y1="295" x2="595" y2="327" stroke="#475569" stroke-width="1" />
-      <line x1="595" y1="295" x2="435" y2="327" stroke="#475569" stroke-width="1" />
+      <rect x="435" y="295" width="160" height="30" fill="url(#diagonal-hatch)" stroke="#64748b" />
+      <line x1="435" y1="295" x2="595" y2="325" stroke="#475569" stroke-width="1" />
+      <line x1="595" y1="295" x2="435" y2="325" stroke="#475569" stroke-width="1" />
     </g>
-    <!-- 餐桌與四張餐椅 -->
+
+    <!-- 實木餐桌與立體四餐椅 -->
     <g id="furniture.dining_table">
-      <rect x="495" y="342" width="45" height="78" rx="3" fill="#1e293b" stroke="#94a3b8" stroke-width="2" />
-      <rect x="473" y="350" width="18" height="24" rx="2" fill="#334155" />
-      <rect x="473" y="386" width="18" height="24" rx="2" fill="#334155" />
-      <rect x="544" y="350" width="18" height="24" rx="2" fill="#334155" />
-      <rect x="544" y="386" width="18" height="24" rx="2" fill="#334155" />
+      <!-- 餐桌桌面 -->
+      <rect x="495" y="342" width="46" height="78" rx="4" fill="#24334a" stroke="#94a3b8" stroke-width="1.8" />
+      <!-- 四張微斜餐椅 -->
+      <rect x="473" y="350" width="18" height="24" rx="3" fill="#334155" stroke="#64748b" />
+      <rect x="473" y="386" width="18" height="24" rx="3" fill="#334155" stroke="#64748b" />
+      <rect x="545" y="350" width="18" height="24" rx="3" fill="#334155" stroke="#64748b" />
+      <rect x="545" y="386" width="18" height="24" rx="3" fill="#334155" stroke="#64748b" />
     </g>
 
-    <!-- 客廳沙發組 -->
-    <g id="furniture.living_sofa" opacity="0.75">
-      <rect x="615" y="302" width="115" height="32" rx="4" fill="#1e293b" stroke="#64748b" />
-      <rect x="615" y="302" width="115" height="9" rx="2" fill="#334155" />
-      <rect x="638" y="346" width="68" height="24" rx="3" fill="#0f172a" stroke="#475569" stroke-dasharray="3,2" />
+    <!-- 客廳立體大沙發組 (帶靠背厚度、立體扶手與三個飽滿座墊) -->
+    <g id="furniture.living_sofa">
+      <!-- 沙發主骨架底座 -->
+      <rect x="612" y="300" width="128" height="40" rx="5" fill="#24334a" stroke="#94a3b8" stroke-width="1.8" />
+      <!-- 靠背 -->
+      <rect x="612" y="300" width="128" height="12" rx="3" fill="#334155" stroke="#64748b" />
+      <!-- 左扶手 -->
+      <rect x="612" y="300" width="10" height="40" rx="2" fill="#334155" stroke="#64748b" />
+      <!-- 右扶手 -->
+      <rect x="730" y="300" width="10" height="40" rx="2" fill="#334155" stroke="#64748b" />
+      <!-- 三個舒適座墊分界 -->
+      <line x1="651" y1="312" x2="651" y2="340" stroke="#64748b" stroke-width="1.2" />
+      <line x1="691" y1="312" x2="691" y2="340" stroke="#64748b" stroke-width="1.2" />
+      <!-- 沙發前茶几與地毯 -->
+      <rect x="632" y="348" width="86" height="34" rx="4" fill="#0f172a" stroke="#475569" stroke-dasharray="3,2" />
+      <rect x="646" y="354" width="58" height="22" rx="3" fill="#1e293b" stroke="#94a3b8" />
     </g>
 
-    <!-- 客廳電視牆 / 媒體櫃 -->
+    <!-- 客廳電視牆 / 媒體木作櫃 -->
     <g id="furniture.tv_wall">
       <rect x="625" y="456" width="168" height="30" fill="url(#diagonal-hatch)" stroke="#64748b" />
       <line x1="625" y1="456" x2="793" y2="486" stroke="#475569" stroke-width="1" />
       <line x1="793" y1="456" x2="625" y2="486" stroke="#475569" stroke-width="1" />
     </g>
 
-    <!-- ===== 右下廚房 / 家電櫃 ===== -->
-    <g id="furniture.kitchen_counters">
-      <rect x="625" y="494" width="168" height="26" fill="url(#diagonal-hatch)" />
-      <line x1="625" y1="494" x2="793" y2="520" stroke="#475569" stroke-width="1" />
-      <rect x="680" y="572" width="95" height="24" fill="url(#diagonal-hatch)" />
-      <line x1="680" y1="572" x2="775" y2="596" stroke="#475569" stroke-width="1" />
-      <line x1="775" y1="572" x2="680" y2="596" stroke="#475569" stroke-width="1" />
-    </g>
-
-    <!-- ===== 下方多功能室 / 書房 ===== -->
+    <!-- ===== ⑤ 書房工作區 (工作大桌、辦公椅、立體螢幕) ===== -->
     <g id="furniture.study_desk">
-      <rect x="285" y="622" width="125" height="48" rx="4" fill="#1e293b" stroke="#64748b" stroke-width="1.5" />
-      <rect x="330" y="676" width="36" height="20" rx="5" fill="#334155" stroke="#64748b" />
-      <rect x="422" y="568" width="22" height="184" fill="url(#diagonal-hatch)" />
+      <!-- 實木工作大桌 -->
+      <rect x="285" y="622" width="125" height="50" rx="4" fill="#24334a" stroke="#94a3b8" stroke-width="1.8" />
+      <!-- 人體工學椅 -->
+      <rect x="330" y="678" width="36" height="22" rx="6" fill="#334155" stroke="#64748b" />
+      <!-- 書房右側整面展示書櫃 -->
+      <rect x="422" y="568" width="22" height="184" fill="url(#diagonal-hatch)" stroke="#64748b" />
       <line x1="422" y1="568" x2="444" y2="752" stroke="#475569" stroke-width="1" />
     </g>
   </g>
 
-  <!-- ==================== 4. 門扇與開門弧線層 ==================== -->
-  <g id="layer-doors" inkscape:groupmode="layer" inkscape:label="04_Doors_Sensors" fill="none" stroke="#64748b" stroke-width="1.5">
-    <g id="door.main_entrance">
-      <line x1="255" y1="560" x2="255" y2="610" stroke="#94a3b8" stroke-width="2.5" />
-      <path d="M 205,560 A 50,50 0 0,0 255,610" stroke-dasharray="3,3" />
-    </g>
-    <g id="door.bedroom_nw">
-      <line x1="360" y1="220" x2="315" y2="220" stroke="#94a3b8" stroke-width="2" />
-      <path d="M 315,220 A 45,45 0 0,0 360,265" stroke-dasharray="3,3" />
-    </g>
-    <g id="door.bedroom_sw">
-      <line x1="360" y1="448" x2="315" y2="448" stroke="#94a3b8" stroke-width="2" />
-      <path d="M 315,448 A 45,45 0 0,1 360,403" stroke-dasharray="3,3" />
-    </g>
-    <g id="door.bath_guest">
-      <line x1="370" y1="200" x2="370" y2="155" stroke="#94a3b8" stroke-width="2" />
-      <path d="M 370,155 A 45,45 0 0,1 415,200" stroke-dasharray="3,3" />
-    </g>
-    <g id="door.bath_master">
-      <line x1="510" y1="200" x2="510" y2="155" stroke="#94a3b8" stroke-width="2" />
-      <path d="M 510,155 A 45,45 0 0,1 555,200" stroke-dasharray="3,3" />
-    </g>
-    <g id="door.living_entry">
-      <line x1="435" y1="205" x2="480" y2="205" stroke="#94a3b8" stroke-width="2" />
-      <path d="M 480,205 A 45,45 0 0,1 435,250" stroke-dasharray="3,3" />
-    </g>
-    <g id="door.kitchen">
-      <line x1="570" y1="540" x2="570" y2="595" stroke="#94a3b8" stroke-width="2" />
-      <path d="M 570,540 A 55,55 0 0,1 625,595" stroke-dasharray="3,3" />
-    </g>
+  <!-- ==================== 4. 實體門片與開門軌跡 ==================== -->
+  <g id="layer-doors" inkscape:groupmode="layer" inkscape:label="04_Doors_Sensors" fill="none" stroke="#64748b" stroke-width="1.4">
+    <!-- 大門玄關 -->
+    <path d="M 365,495 L 365,545" stroke="#cbd5e1" stroke-width="2.5" />
+    <path d="M 365,545 A 50,50 0 0,0 415,495" stroke-dasharray="3,3" />
+
+    <!-- 小孩房門 -->
+    <path d="M 330,200 L 290,230" stroke="#cbd5e1" stroke-width="2" />
+    <path d="M 330,200 A 45,45 0 0,1 285,245" stroke-dasharray="3,3" />
+
+    <!-- 孝親房門 -->
+    <path d="M 360,395 L 320,425" stroke="#cbd5e1" stroke-width="2" />
+    <path d="M 360,395 A 45,45 0 0,1 315,440" stroke-dasharray="3,3" />
+
+    <!-- 書房門 -->
+    <path d="M 365,560 L 325,590" stroke="#cbd5e1" stroke-width="2" />
+    <path d="M 365,560 A 45,45 0 0,1 320,605" stroke-dasharray="3,3" />
+
+    <!-- 客衛門 -->
+    <path d="M 430,200 L 395,170" stroke="#94a3b8" stroke-width="1.8" />
+    <path d="M 430,200 A 35,35 0 0,0 395,165" stroke-dasharray="3,3" />
+
+    <!-- 主衛門 -->
+    <path d="M 500,200 L 535,170" stroke="#94a3b8" stroke-width="1.8" />
+    <path d="M 500,200 A 35,35 0 0,1 535,165" stroke-dasharray="3,3" />
+
+    <!-- 儲藏室門 -->
+    <path d="M 570,495 L 610,465" stroke="#94a3b8" stroke-width="1.8" />
+    <path d="M 570,495 A 45,45 0 0,1 615,540" stroke-dasharray="3,3" />
   </g>
 
-  <!-- ==================== 5. 建築結構牆體層 ==================== -->
-  <g id="layer-walls" inkscape:groupmode="layer" inkscape:label="05_Walls_Structure" stroke="#e2e8f0" stroke-width="7" stroke-linecap="square" fill="none">
+  <!-- ==================== 5. 3D 立體結構牆體層 (雙層結構 + 實體投影) ==================== -->
+  <!-- 5A. 牆體底部 3D 投射陰影層 (向上帝視角提供強烈高度景深) -->
+  <g id="layer-walls-shadow" filter="url(#wall-shadow-3d)" opacity="0.9" fill="none" stroke="#000000" stroke-width="8" stroke-linecap="square">
+    <!-- 外牆與內隔間投影路徑 -->
     <path d="M 150,560 L 150,80 L 800,80 L 800,600 L 565,600 L 565,530 L 450,530 L 450,760 L 260,760 L 260,560 L 150,560" />
     <line x1="260" y1="560" x2="365" y2="560" />
     <line x1="150" y1="265" x2="360" y2="265" />
@@ -208,101 +274,50 @@
     <line x1="435" y1="290" x2="800" y2="290" />
     <line x1="435" y1="200" x2="435" y2="395" />
     <line x1="565" y1="490" x2="800" y2="490" />
-
-    <!-- 實心結構梁柱 -->
-    <rect x="330" y="80" width="38" height="120" fill="#cbd5e1" stroke="none" opacity="0.2" />
-    <rect x="415" y="80" width="50" height="28" fill="#e2e8f0" stroke="none" />
-    <rect x="330" y="168" width="42" height="32" fill="#e2e8f0" stroke="none" />
-    <rect x="422" y="490" width="42" height="50" fill="#e2e8f0" stroke="none" />
-    
-    <!-- 窗戶標示 (雙細線) -->
-    <g stroke="#38bdf8" stroke-width="2">
-      <line x1="148" y1="120" x2="148" y2="200" />
-      <line x1="152" y1="120" x2="152" y2="200" />
-      <line x1="148" y1="310" x2="148" y2="390" />
-      <line x1="152" y1="310" x2="152" y2="390" />
-      <line x1="798" y1="110" x2="798" y2="230" />
-      <line x1="802" y1="110" x2="802" y2="230" />
-      <line x1="798" y1="330" x2="798" y2="450" />
-      <line x1="802" y1="330" x2="802" y2="450" />
-    </g>
   </g>
 
-  <!-- ==================== 6. 水電+弱電插座層 ==================== -->
-  <g id="layer-electrical" inkscape:groupmode="layer" inkscape:label="06_Electrical_Outlets">
-    <!-- 圖例表 -->
-    <g id="legend-table" class="ha-entity" data-device="legend_outlets" transform="translate(822, 520)">
-      <text x="0" y="-10" fill="#94a3b8" font-family="sans-serif" font-size="13" font-weight="bold">水電+弱電圖表</text>
-      <rect x="0" y="0" width="145" height="190" fill="#1e293b" stroke="#475569" stroke-width="1.5" rx="6" />
-      <line x1="0" y1="28" x2="145" y2="28" stroke="#475569" />
-      <line x1="0" y1="55" x2="145" y2="55" stroke="#475569" />
-      <line x1="0" y1="82" x2="145" y2="82" stroke="#475569" />
-      <line x1="0" y1="109" x2="145" y2="109" stroke="#475569" />
-      <line x1="0" y1="136" x2="145" y2="136" stroke="#475569" />
-      <line x1="42" y1="0" x2="42" y2="190" stroke="#475569" />
-      
-      <text x="21" y="19" fill="#cbd5e1" font-family="sans-serif" font-size="11" text-anchor="middle">圖號</text>
-      <text x="93" y="19" fill="#cbd5e1" font-family="sans-serif" font-size="11" text-anchor="middle">說 明</text>
-      
-      <!-- C 電腦插座 -->
-      <circle cx="21" cy="41" r="8" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5" />
-      <text x="21" y="45" fill="#38bdf8" font-family="monospace" font-size="10" font-weight="bold" text-anchor="middle">C</text>
-      <text x="52" y="45" fill="#e2e8f0" font-family="sans-serif" font-size="11">電腦插座</text>
-      
-      <!-- Φ 插座 -->
-      <circle cx="21" cy="68" r="8" fill="#0f172a" stroke="#f59e0b" stroke-width="1.5" />
-      <line x1="19" y1="61" x2="19" y2="75" stroke="#f59e0b" stroke-width="1.2" />
-      <line x1="23" y1="61" x2="23" y2="75" stroke="#f59e0b" stroke-width="1.2" />
-      <text x="52" y="72" fill="#e2e8f0" font-family="sans-serif" font-size="11">插 座</text>
-      
-      <!-- TV 電視插座 -->
-      <circle cx="21" cy="95" r="8" fill="#0f172a" stroke="#a855f7" stroke-width="1.5" />
-      <text x="21" y="99" fill="#a855f7" font-family="monospace" font-size="8" font-weight="bold" text-anchor="middle">TV</text>
-      <text x="52" y="99" fill="#e2e8f0" font-family="sans-serif" font-size="11">電視插座</text>
-      
-      <!-- TEL 電話插座 -->
-      <rect x="12" y="114" width="18" height="14" rx="2" fill="#0f172a" stroke="#10b981" stroke-width="1.5" />
-      <text x="21" y="124" fill="#10b981" font-family="monospace" font-size="7" font-weight="bold" text-anchor="middle">TEL</text>
-      <text x="52" y="126" fill="#e2e8f0" font-family="sans-serif" font-size="11">電話插座</text>
+  <!-- 5B. 實體牆身 (深灰黑厚牆體) -->
+  <g id="layer-walls-body" fill="none" stroke="#1e293b" stroke-width="7" stroke-linecap="square">
+    <path d="M 150,560 L 150,80 L 800,80 L 800,600 L 565,600 L 565,530 L 450,530 L 450,760 L 260,760 L 260,560 L 150,560" />
+    <line x1="260" y1="560" x2="365" y2="560" />
+    <line x1="150" y1="265" x2="360" y2="265" />
+    <line x1="150" y1="450" x2="365" y2="450" />
+    <line x1="365" y1="260" x2="365" y2="495" />
+    <line x1="330" y1="200" x2="600" y2="200" />
+    <line x1="465" y1="80" x2="465" y2="200" />
+    <line x1="600" y1="80" x2="600" y2="200" />
+    <line x1="435" y1="290" x2="800" y2="290" />
+    <line x1="435" y1="200" x2="435" y2="395" />
+    <line x1="565" y1="490" x2="800" y2="490" />
+  </g>
 
-      <!-- 狀態燈號提示 -->
-      <circle cx="21" cy="162" r="6" fill="#10b981" />
-      <text x="52" y="166" fill="#94a3b8" font-family="sans-serif" font-size="10">點擊設備可控</text>
-    </g>
+  <!-- 5C. 牆頂高光微倒角輪廓線 (營造建築模型頂面反光) -->
+  <g id="layer-walls-top" fill="none" stroke="#cbd5e1" stroke-width="2.2" stroke-linecap="square" opacity="0.95">
+    <path d="M 150,560 L 150,80 L 800,80 L 800,600 L 565,600 L 565,530 L 450,530 L 450,760 L 260,760 L 260,560 L 150,560" />
+    <line x1="260" y1="560" x2="365" y2="560" />
+    <line x1="150" y1="265" x2="360" y2="265" />
+    <line x1="150" y1="450" x2="365" y2="450" />
+    <line x1="365" y1="260" x2="365" y2="495" />
+    <line x1="330" y1="200" x2="600" y2="200" />
+    <line x1="465" y1="80" x2="465" y2="200" />
+    <line x1="600" y1="80" x2="600" y2="200" />
+    <line x1="435" y1="290" x2="800" y2="290" />
+    <line x1="435" y1="200" x2="435" y2="395" />
+    <line x1="565" y1="490" x2="800" y2="490" />
+  </g>
 
-    <!-- 實際配置於平面圖上的智慧插座實體 -->
-    <g id="outlet.living_tv" transform="translate(645, 444)">
-      <circle cx="0" cy="0" r="7" fill="#0f172a" stroke="#a855f7" stroke-width="1.5" />
-      <text x="0" y="3" fill="#a855f7" font-family="monospace" font-size="7" font-weight="bold" text-anchor="middle">TV</text>
-    </g>
-    <g id="outlet.living_power" transform="translate(663, 444)">
+  <!-- ==================== 6. 水電迴路與插座標記層 ==================== -->
+  <g id="layer-power-outlets" pointer-events="none" opacity="0.85">
+    <g id="outlet.bedroom_nw" transform="translate(164, 210)">
       <circle cx="0" cy="0" r="7" fill="#0f172a" stroke="#f59e0b" stroke-width="1.5" />
       <line x1="-2" y1="-5" x2="-2" y2="5" stroke="#f59e0b" stroke-width="1.2" />
       <line x1="2" y1="-5" x2="2" y2="5" stroke="#f59e0b" stroke-width="1.2" />
     </g>
-    <g id="outlet.living_net" transform="translate(681, 444)">
-      <circle cx="0" cy="0" r="7" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5" />
-      <text x="0" y="3.5" fill="#38bdf8" font-family="monospace" font-size="9" font-weight="bold" text-anchor="middle">C</text>
-    </g>
-
-    <g id="outlet.dining_220v" transform="translate(460, 338)">
-      <circle cx="0" cy="0" r="7" fill="#0f172a" stroke="#f59e0b" stroke-width="1.5" />
-      <line x1="-2" y1="-5" x2="-2" y2="5" stroke="#f59e0b" stroke-width="1.2" />
-      <line x1="2" y1="-5" x2="2" y2="5" stroke="#f59e0b" stroke-width="1.2" />
-    </g>
-
-    <g id="outlet.bedroom_nw" transform="translate(164, 215)">
-      <circle cx="0" cy="0" r="7" fill="#0f172a" stroke="#f59e0b" stroke-width="1.5" />
-      <line x1="-2" y1="-5" x2="-2" y2="5" stroke="#f59e0b" stroke-width="1.2" />
-      <line x1="2" y1="-5" x2="2" y2="5" stroke="#f59e0b" stroke-width="1.2" />
-    </g>
-
     <g id="outlet.bedroom_sw" transform="translate(164, 395)">
       <circle cx="0" cy="0" r="7" fill="#0f172a" stroke="#f59e0b" stroke-width="1.5" />
       <line x1="-2" y1="-5" x2="-2" y2="5" stroke="#f59e0b" stroke-width="1.2" />
       <line x1="2" y1="-5" x2="2" y2="5" stroke="#f59e0b" stroke-width="1.2" />
     </g>
-
     <g id="outlet.bedroom_master" transform="translate(772, 195)">
       <circle cx="0" cy="0" r="7" fill="#0f172a" stroke="#f59e0b" stroke-width="1.5" />
       <line x1="-2" y1="-5" x2="-2" y2="5" stroke="#f59e0b" stroke-width="1.2" />
@@ -313,21 +328,21 @@
   <!-- ==================== 7. HA 真實裝置圖層 (Real Devices) ==================== -->
   <g id="layer-ha-entities" inkscape:groupmode="layer" inkscape:label="07_HA_Real_Devices">
 
-    <!-- 房間名稱標籤 -->
+    <!-- 空間區域名稱標籤 -->
     <g id="room-labels" fill="#94a3b8" font-family="sans-serif" font-size="13" font-weight="bold" text-anchor="middle" pointer-events="none">
       <text x="222" y="162" fill="#e2e8f0">小孩房</text>
       <text x="242" y="352" fill="#e2e8f0" opacity="0.9">孝親房 (次臥)</text>
-      <text x="700" y="232" opacity="0.85">主臥室</text>
+      <text x="700" y="232" fill="#e2e8f0" opacity="0.95">主臥室</text>
       <text x="405" y="135" font-size="11" opacity="0.6">客衛</text>
       <text x="532" y="135" font-size="11" opacity="0.6">主衛</text>
-      <text x="517" y="438" font-size="11" opacity="0.7">餐廳 Dining</text>
+      <text x="517" y="440" font-size="11" opacity="0.75">餐廳 Dining</text>
       <text x="615" y="395" font-size="14" fill="#cbd5e1">客廳 Living</text>
-      <text x="348" y="592">書房 Study</text>
+      <text x="348" y="592" fill="#e2e8f0">書房 Study</text>
       <text x="600" y="512" font-size="12">儲藏室</text>
       <text x="250" y="512">廚房 Kitchen</text>
     </g>
 
-    <!-- ① 小孩房：米家床頭燈 2 (light.yeelink_bslamp2_2a87_light) + HomePod Mini (media_player.wo_shi_wo_shi) -->
+    <!-- ① 小孩房：米家床頭燈 2 + HomePod Mini -->
     <g id="light.yeelink_bslamp2_2a87_light" class="ha-entity ha-light" data-device="bedside_lamp">
       <circle cx="204" cy="222" r="16" fill="#1e293b" stroke="#fbbf24" stroke-width="2.2" />
       <text x="204" y="227" font-size="15" text-anchor="middle" pointer-events="none">💡</text>
@@ -340,7 +355,7 @@
       <text x="272" y="250" fill="#c084fc" font-family="sans-serif" font-size="9.5" font-weight="bold" text-anchor="middle" pointer-events="none">HomePod</text>
     </g>
 
-    <!-- ② 孝親房：Xiaomi 路由器 BE3600 (RN06) -->
+    <!-- ② 孝親房：Xiaomi 路由器 BE3600 (RN06) 優雅水平置中 -->
     <g id="sensor.xiaomi_rn06_2724_connected_device_number" class="ha-entity ha-router" data-device="xiaomi_router">
       <rect x="200" y="402" width="110" height="34" rx="8" fill="#0f172a" stroke="#3b82f6" stroke-width="1.8" />
       <text x="218" y="424" font-size="14" text-anchor="middle" pointer-events="none">🛜</text>
@@ -348,31 +363,34 @@
       <text id="svg-router-status" x="264" y="429" fill="#94a3b8" font-family="monospace" font-size="8.5" text-anchor="middle" pointer-events="none">31.1</text>
     </g>
 
-    <!-- ③ 客廳：C400 攝影機 (含可視角錐形) + 溫濕度時鐘 + Sony 55X85K 電視 -->
-    <path id="camera-fov-cone" d="M 772,322 L 620,296 A 160,160 0 0,0 635,415 Z" fill="url(#cam-fov-grad)" pointer-events="none" />
+    <!-- ③ 客廳設備群：C400 精準移至右下角 ＋ 朝向左上方大廣角視野光錐 -->
+    <!-- C400 右下角超廣角光錐 (頂點 772,460 ➔ 大廣角射向沙發、茶几、餐桌與大門玄關) -->
+    <path id="camera-fov-cone" d="M 772,460 L 765,305 A 250,250 0 0,0 445,375 Z" fill="url(#cam-fov-grad-bottom-right)" pointer-events="none" />
 
+    <!-- C400 攝影機實體本體 (座落於電視牆右下角角落，面向全客廳) -->
     <g id="camera.chuangmi_039c04_c643_camera_control" class="ha-entity ha-camera" data-device="c400_camera">
-      <circle cx="772" cy="322" r="16" fill="#1e293b" stroke="#38bdf8" stroke-width="2.2" />
-      <text x="772" y="327" font-size="14" text-anchor="middle" pointer-events="none">📹</text>
-      <text x="772" y="349" fill="#38bdf8" font-family="sans-serif" font-size="9.5" font-weight="bold" text-anchor="middle" pointer-events="none">C400</text>
+      <circle cx="772" cy="460" r="16" fill="#1e293b" stroke="#38bdf8" stroke-width="2.2" />
+      <text x="772" y="465" font-size="14" text-anchor="middle" pointer-events="none">📹</text>
+      <text x="772" y="487" fill="#38bdf8" font-family="sans-serif" font-size="9.5" font-weight="bold" text-anchor="middle" pointer-events="none">C400</text>
     </g>
-    <circle id="switch.chuangmi_039c04_c643_motion_detection" class="ha-entity ha-cam-motion" data-device="c400_camera" cx="785" cy="309" r="4.5" fill="#ef4444" />
+    <!-- C400 移動偵測警示紅點 -->
+    <circle id="switch.chuangmi_039c04_c643_motion_detection" class="ha-entity ha-cam-motion" data-device="c400_camera" cx="784" cy="448" r="4.5" fill="#ef4444" />
 
-    <!-- 客廳溫濕度計 (點擊開啟溫濕度資訊) -->
-    <g id="climate-living" class="ha-entity" data-device="ble_clock">
-      <rect x="676" y="366" width="114" height="56" rx="8" fill="#0f172a" stroke="#475569" stroke-width="1.5" />
-      <text x="690" y="389" font-size="12" fill="#94a3b8" font-family="sans-serif" pointer-events="none">🌡️</text>
-      <text x="690" y="412" font-size="12" fill="#94a3b8" font-family="sans-serif" pointer-events="none">💧</text>
-    </g>
-    <text id="sensor.miaomiaoce_o2_f576_temperature" class="ha-entity ha-temp" data-device="ble_clock" x="778" y="390" fill="#f8fafc" font-family="monospace" font-size="14" font-weight="bold" text-anchor="end">--°C</text>
-    <text id="sensor.miaomiaoce_o2_f576_relative_humidity" class="ha-entity ha-humi" data-device="ble_clock" x="778" y="413" fill="#7dd3fc" font-family="monospace" font-size="14" font-weight="bold" text-anchor="end">--%</text>
-
-    <!-- 客廳電視牆：Sony 55X85K 智慧電視 (media_player.sony_km_55x85k_2) -->
+    <!-- 客廳電視牆：Sony 55X85K 4K 智慧電視 (向左微調與右下角 C400 形成完美間距) -->
     <g id="media_player.sony_km_55x85k_2" class="ha-entity ha-tv" data-device="sony_tv">
-      <rect x="695" y="438" width="96" height="28" rx="6" fill="#0f172a" stroke="#38bdf8" stroke-width="1.8" />
-      <text x="711" y="457" font-size="13" text-anchor="middle" pointer-events="none">📺</text>
-      <text x="752" y="456" fill="#e2e8f0" font-family="sans-serif" font-size="10" font-weight="bold" text-anchor="middle" pointer-events="none">Sony 55"</text>
+      <rect x="640" y="442" width="94" height="26" rx="6" fill="#0f172a" stroke="#38bdf8" stroke-width="1.8" />
+      <text x="656" y="460" font-size="13" text-anchor="middle" pointer-events="none">📺</text>
+      <text x="696" y="459" fill="#e2e8f0" font-family="sans-serif" font-size="10" font-weight="bold" text-anchor="middle" pointer-events="none">Sony 55"</text>
     </g>
+
+    <!-- 客廳溫濕度時鐘 (放置於沙發與電視右側過道) -->
+    <g id="climate-living" class="ha-entity" data-device="ble_clock">
+      <rect x="676" y="362" width="114" height="56" rx="8" fill="#0f172a" stroke="#475569" stroke-width="1.5" />
+      <text x="690" y="385" font-size="12" fill="#94a3b8" font-family="sans-serif" pointer-events="none">🌡️</text>
+      <text x="690" y="408" font-size="12" fill="#94a3b8" font-family="sans-serif" pointer-events="none">💧</text>
+    </g>
+    <text id="sensor.miaomiaoce_o2_f576_temperature" class="ha-entity ha-temp" data-device="ble_clock" x="778" y="386" fill="#f8fafc" font-family="monospace" font-size="14" font-weight="bold" text-anchor="end">--°C</text>
+    <text id="sensor.miaomiaoce_o2_f576_relative_humidity" class="ha-entity ha-humi" data-device="ble_clock" x="778" y="409" fill="#7dd3fc" font-family="monospace" font-size="14" font-weight="bold" text-anchor="end">--%</text>
 
     <!-- ④ 儲藏室：米家掃地機器人 1代 -->
     <g id="vacuum.rockrobo_v1_6536_robot_cleaner" class="ha-entity ha-vacuum" data-device="roborock_vacuum">
@@ -385,10 +403,11 @@
       <text id="sensor.rockrobo_v1_6536_battery_level" class="ha-entity ha-battery" data-device="roborock_vacuum" x="707" y="553" fill="#a3e635" font-family="monospace" font-size="12" font-weight="bold" text-anchor="middle">🔋99%</text>
     </g>
 
-    <!-- ⑤ 書房：Samsung M7 32" + Lollipop 嬰兒攝影機 (樺) + 樹莓派 4 中樞 + 小愛音箱 mini -->
+    <!-- ⑤ 書房工作與育兒核心：M7 螢幕 + 小愛音箱 + 樹莓派 4 + Lollipop (樺) -->
+    <!-- Lollipop 嬰兒攝影機光錐 -->
     <path id="lollipop-fov-cone" d="M 392,714 L 278,682 A 120,120 0 0,1 368,602 Z" fill="url(#lollipop-fov-grad)" pointer-events="none" />
 
-    <!-- 書桌螢幕：Samsung M7 32" -->
+    <!-- 書桌中心：Samsung M7 32" 智慧螢幕 -->
     <g id="media_player.monitor_samsung_m7_32" class="ha-entity ha-monitor" data-device="samsung_m7">
       <rect x="292" y="626" width="64" height="38" rx="4" fill="#1e293b" stroke="#38bdf8" stroke-width="2" />
       <rect x="297" y="631" width="54" height="28" rx="2" fill="#0f172a" class="screen" />
@@ -397,14 +416,14 @@
       <text x="324" y="649" font-size="11" fill="#e2e8f0" font-family="monospace" font-weight="bold" text-anchor="middle" pointer-events="none">M7 32"</text>
     </g>
 
-    <!-- 書桌右側：小愛音箱 mini -->
+    <!-- 書桌右上：小愛音箱 mini (書房語音助理) -->
     <g id="media_player.xiaomi_lx01_d7ab_play_control" class="ha-entity ha-xiaoai" data-device="xiaoai_mini">
       <circle cx="396" cy="626" r="15" fill="#1e293b" stroke="#f97316" stroke-width="2.2" />
       <text x="396" y="631" font-size="13" text-anchor="middle" pointer-events="none">🔊</text>
       <text x="396" y="652" fill="#fdba74" font-family="sans-serif" font-size="9" font-weight="bold" text-anchor="middle" pointer-events="none">小愛 mini</text>
     </g>
 
-    <!-- 書房左下：樹莓派 4 智慧家庭中樞 -->
+    <!-- 書房左下：樹莓派 4 智慧家庭中樞 (Pi4) -->
     <g id="sensor.system_monitor_processor_temperature" class="ha-entity ha-pi4" data-device="pi4_hub">
       <rect x="272" y="700" width="86" height="34" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1.8" />
       <text x="288" y="722" font-size="14" text-anchor="middle" pointer-events="none">🍓</text>
@@ -412,7 +431,7 @@
       <text id="svg-pi4-status" x="325" y="727" fill="#94a3b8" font-family="monospace" font-size="8.5" text-anchor="middle" pointer-events="none">31.212</text>
     </g>
 
-    <!-- 書房右下：Lollipop 嬰兒攝影機 (樺) -->
+    <!-- 書房右下：Lollipop 嬰兒攝影機 (寶寶：樺) -->
     <g id="camera.lollipop_baby_camera" class="ha-entity ha-camera" data-device="lollipop_camera">
       <circle cx="392" cy="714" r="16" fill="#1e293b" stroke="#f472b6" stroke-width="2.2" />
       <text x="392" y="719" font-size="14" text-anchor="middle" pointer-events="none">🍼</text>
