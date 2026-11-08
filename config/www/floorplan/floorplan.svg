@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg"
      xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
      xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-     viewBox="120 50 870 730"
+     viewBox="100 40 920 740"
      width="100%"
      height="100%"
      id="floorplan-root">
@@ -87,7 +87,7 @@
 
   <!-- ==================== 1. 底層 3D 微縮展台畫布 ==================== -->
   <g id="layer-background" inkscape:groupmode="layer" inkscape:label="01_Background">
-    <rect id="bg-canvas" x="120" y="50" width="870" height="730" fill="#090e17" rx="20" />
+    <rect id="bg-canvas" x="100" y="40" width="920" height="740" fill="#090e17" rx="20" />
     <!-- 展台光照光暈 -->
     <circle cx="520" cy="410" r="460" fill="#1e293b" opacity="0.22" pointer-events="none" />
     <text x="970" y="765" fill="#475569" font-family="sans-serif" font-size="11" text-anchor="end">御美學 · 2.5D 斜角切牆微縮模型上帝視角 • 點擊任一房間或設備查看資訊與控制</text>
@@ -298,7 +298,7 @@
   <!-- 精確錨定於客廳右下角 (cx=812, cy=515)，朝向左上方展開覆蓋全客廳、沙發與玄關 -->
   <g id="c400-camera-group" class="ha-entity" data-device="c400_camera">
     <!-- 2.5D 動態扇形雷達光錐 (朝左上方展開) -->
-    <path id="c400-iso-fov" class="c400-fov-beam"
+    <path id="camera-fov-cone" class="c400-fov-beam"
           d="M 812,515 L 430,300 A 500 500 0 0 0 430,555 Z"
           fill="url(#cam-fov-c400-iso)" pointer-events="none" />
     <!-- 監控視野外圈虛線弧線 -->
@@ -306,20 +306,20 @@
     <!-- 攝影機視角中心引導線 -->
     <line x1="812" y1="515" x2="480" y2="390" stroke="#0ea5e9" stroke-width="1" stroke-dasharray="3,3" opacity="0.5" pointer-events="none" />
 
-    <!-- C400 實體攝影機 (客廳右下角角落) -->
-    <g id="camera.c400_camera_stream" transform="translate(812, 515)">
+    <!-- C400 實體攝影機 (客廳右下角角落) - 嚴格雙向對齊 ID -->
+    <g id="camera.chuangmi_039c04_c643_camera_control" transform="translate(812, 515)">
       <ellipse cx="0" cy="5" rx="14" ry="7" fill="#000" opacity="0.6" />
       <circle cx="0" cy="0" r="13" fill="#0f172a" stroke="#38bdf8" stroke-width="2.5" class="device-active" filter="url(#glow-cyan)" />
       <!-- 鏡頭瞳孔 -->
       <circle cx="-2" cy="-2" r="6" fill="#38bdf8" />
       <circle cx="-3" cy="-3" r="2.5" fill="#ffffff" />
-      <!-- 即時狀態小圖示 -->
+      <!-- 即時狀態小圖示 (支援人體移動偵測紅點閃爍) -->
       <g transform="translate(-10, -28)">
         <rect width="20" height="12" rx="6" fill="#0284c7" />
-        <circle cx="10" cy="6" r="3" fill="#4ade80" />
+        <circle id="switch.chuangmi_039c04_c643_motion_detection" cx="10" cy="6" r="3" fill="#4ade80" />
       </g>
     </g>
-    <text x="812" y="545" fill="#38bdf8" font-family="sans-serif" font-size="10" font-weight="bold" text-anchor="middle">C400</text>
+    <text x="812" y="545" fill="#38bdf8" font-family="sans-serif" font-size="11" font-weight="bold" text-anchor="middle">C400</text>
   </g>
 
   <!-- ==================== 6. IoT 實體設備標籤與微縮圖標 (Device Anchors) ==================== -->
@@ -330,22 +330,22 @@
       <circle cx="0" cy="0" r="14" fill="#1e293b" stroke="#64748b" stroke-width="2" />
       <!-- 燈泡小圖示 -->
       <path d="M -5,-5 L 5,-5 L 3,3 L -3,3 Z M -2,5 L 2,5" stroke="#fbbf24" stroke-width="1.2" fill="none" />
-      <text x="0" y="24" fill="#cbd5e1" font-family="sans-serif" font-size="9" text-anchor="middle">床頭燈 2</text>
+      <text x="0" y="24" fill="#cbd5e1" font-family="sans-serif" font-size="11" font-weight="bold" text-anchor="middle">床頭燈 2</text>
     </g>
 
-    <!-- 6.2 小孩房：Apple HomePod mini -->
-    <g id="media_player.homepod_mini_xiao_hai_fang" class="ha-entity" data-device="homepod_mini" transform="translate(255, 195)">
+    <!-- 6.2 小孩房：Apple HomePod mini (對齊 ID media_player.wo_shi_wo_shi) -->
+    <g id="media_player.wo_shi_wo_shi" class="ha-entity" data-device="homepod_mini" transform="translate(255, 195)">
       <circle cx="0" cy="0" r="14" fill="#0f172a" stroke="#38bdf8" stroke-width="2" />
       <path d="M -5,-3 L -2,-3 L 2,-6 L 2,6 L -2,3 L -5,3 Z" fill="#38bdf8" />
       <path d="M 4,-3 Q 7,0 4,3" fill="none" stroke="#38bdf8" stroke-width="1.2" />
-      <text x="0" y="24" fill="#cbd5e1" font-family="sans-serif" font-size="9" text-anchor="middle">HomePod</text>
+      <text x="0" y="24" fill="#cbd5e1" font-family="sans-serif" font-size="11" font-weight="bold" text-anchor="middle">HomePod</text>
     </g>
 
     <!-- 6.3 孝親房：Xiaomi 路由器 BE3600 (RN06) 雙模置中膠囊 -->
     <g id="sensor.xiaomi_rn06_2724_connected_device_number" class="ha-entity" data-device="xiaomi_router" transform="translate(195, 385)">
-      <rect x="0" y="0" width="100" height="26" rx="13" fill="#0f172a" stroke="#0ea5e9" stroke-width="1.4" filter="url(#glow-cyan)" />
-      <text x="50" y="11" fill="#38bdf8" font-family="sans-serif" font-size="8" font-weight="bold" text-anchor="middle">WiFi 7 路由器</text>
-      <text id="svg-router-status" x="50" y="21" fill="#94a3b8" font-family="sans-serif" font-size="8" text-anchor="middle">31.1 • 10台</text>
+      <rect x="0" y="0" width="104" height="28" rx="14" fill="#0f172a" stroke="#0ea5e9" stroke-width="1.4" filter="url(#glow-cyan)" />
+      <text x="52" y="12" fill="#38bdf8" font-family="sans-serif" font-size="10" font-weight="bold" text-anchor="middle">WiFi 7 路由器</text>
+      <text id="svg-router-status" x="52" y="23" fill="#94a3b8" font-family="sans-serif" font-size="9.5" text-anchor="middle">31.1 • 10台</text>
     </g>
 
     <!-- 6.4 客廳：小米溫濕度計 3 (茶几/電視櫃旁) -->
@@ -356,55 +356,55 @@
       <text x="32" y="19" fill="#f43f5e" font-family="sans-serif" font-size="11" font-weight="bold">28.9°C</text>
       <!-- 濕度文字 -->
       <text x="14" y="34" fill="#38bdf8" font-size="10">💧</text>
-      <text id="sensor.miaomiaoce_o2_f576_relative_humidity" x="32" y="35" fill="#38bdf8" font-family="sans-serif" font-size="10">69%</text>
+      <text id="sensor.miaomiaoce_o2_f576_relative_humidity" x="32" y="35" fill="#38bdf8" font-family="sans-serif" font-size="11" font-weight="bold">69%</text>
     </g>
 
-    <!-- 6.5 客廳：Sony 55 吋電視 (正下方電視矮牆 y=528，徹底移出儲藏室 y=560~630) -->
-    <g id="media_player.sony_55x85k" class="ha-entity" data-device="sony_tv" transform="translate(650, 528)">
-      <rect x="-42" y="-12" width="84" height="24" rx="4" fill="#0f172a" stroke="#38bdf8" stroke-width="1.4" filter="url(#glow-cyan)" />
-      <line x1="-36" y1="0" x2="36" y2="0" stroke="#38bdf8" stroke-width="2.5" />
-      <text x="0" y="4" fill="#e2e8f0" font-family="sans-serif" font-size="8.5" font-weight="bold" text-anchor="middle">📺 Sony 55"</text>
+    <!-- 6.5 客廳：Sony 55 吋電視 (對齊 ID media_player.sony_km_55x85k_2) -->
+    <g id="media_player.sony_km_55x85k_2" class="ha-entity" data-device="sony_tv" transform="translate(650, 528)">
+      <rect x="-44" y="-12" width="88" height="24" rx="4" fill="#0f172a" stroke="#38bdf8" stroke-width="1.4" filter="url(#glow-cyan)" />
+      <line x1="-38" y1="0" x2="38" y2="0" stroke="#38bdf8" stroke-width="2.5" />
+      <text x="0" y="4" fill="#e2e8f0" font-family="sans-serif" font-size="11" font-weight="bold" text-anchor="middle">📺 Sony 55"</text>
     </g>
 
-    <!-- 6.6 書房：Samsung M7 32 吋曲面螢幕 (media_player.samsung_m7) -->
-    <g id="media_player.samsung_m7" class="ha-entity" data-device="samsung_m7" transform="translate(290, 620)">
-      <rect x="-35" y="-14" width="70" height="26" rx="5" fill="#0f172a" stroke="#0ea5e9" stroke-width="1.4" filter="url(#glow-cyan)" />
-      <text x="0" y="2" fill="#38bdf8" font-family="sans-serif" font-size="9" font-weight="bold" text-anchor="middle">🖥 M7 32"</text>
+    <!-- 6.6 書房：Samsung M7 32 吋曲面螢幕 (對齊 ID media_player.monitor_samsung_m7_32) -->
+    <g id="media_player.monitor_samsung_m7_32" class="ha-entity" data-device="samsung_m7" transform="translate(290, 620)">
+      <rect x="-38" y="-14" width="76" height="28" rx="5" fill="#0f172a" stroke="#0ea5e9" stroke-width="1.4" filter="url(#glow-cyan)" />
+      <text x="0" y="3" fill="#38bdf8" font-family="sans-serif" font-size="11" font-weight="bold" text-anchor="middle">🖥 M7 32"</text>
     </g>
 
-    <!-- 6.7 書房：小愛音箱 mini (media_player.xiaoai_mini_study) -->
-    <g id="media_player.xiaoai_mini_study" class="ha-entity" data-device="xiaoai_mini" transform="translate(375, 620)">
+    <!-- 6.7 書房：小愛音箱 mini (對齊 ID media_player.xiaomi_lx01_d7ab_play_control，高對比無障礙黃字) -->
+    <g id="media_player.xiaomi_lx01_d7ab_play_control" class="ha-entity ha-xiaoai" data-device="xiaoai_mini" transform="translate(375, 620)">
       <circle cx="0" cy="0" r="14" fill="#1e293b" stroke="#f59e0b" stroke-width="2" />
       <circle cx="0" cy="0" r="5" fill="#f59e0b" />
-      <text x="0" y="22" fill="#fbbf24" font-family="sans-serif" font-size="8.5" font-weight="bold" text-anchor="middle">小愛 mini</text>
+      <text x="0" y="24" fill="#fef08a" font-family="sans-serif" font-size="11" font-weight="bold" text-anchor="middle">小愛 mini</text>
     </g>
 
     <!-- 6.8 書房：樹莓派 4 智慧中樞 (pi4_hub) -->
     <g id="svg-pi4-group" class="ha-entity" data-device="pi4_hub" transform="translate(290, 680)">
-      <rect x="-40" y="-12" width="80" height="24" rx="6" fill="#0f172a" stroke="#10b981" stroke-width="1.3" filter="url(#furniture-shadow-3d)" />
-      <circle cx="-30" cy="0" r="3.5" fill="#10b981" />
-      <text id="svg-pi4-status" x="3" y="3" fill="#34d399" font-family="sans-serif" font-size="8.5" font-weight="bold" text-anchor="middle">Pi4 中樞 61°C</text>
+      <rect x="-44" y="-13" width="88" height="26" rx="6" fill="#0f172a" stroke="#10b981" stroke-width="1.3" filter="url(#furniture-shadow-3d)" />
+      <circle cx="-34" cy="0" r="3.5" fill="#10b981" />
+      <text id="svg-pi4-status" x="3" y="4" fill="#6ee7b7" font-family="sans-serif" font-size="10.5" font-weight="bold" text-anchor="middle">Pi4 中樞 61°C</text>
     </g>
 
-    <!-- 6.9 書房：Lollipop 棒棒糖嬰兒攝影機 (camera.study_lollipop_stream) -->
-    <g id="camera.study_lollipop_stream" class="ha-entity" data-device="lollipop_camera" transform="translate(375, 680)">
+    <!-- 6.9 書房：Lollipop 棒棒糖嬰兒攝影機 (對齊 ID camera.lollipop_baby_camera) -->
+    <g id="camera.lollipop_baby_camera" class="ha-entity" data-device="lollipop_camera" transform="translate(375, 680)">
       <!-- 棒棒糖監控光錐 -->
       <path d="M 0,0 L -60,-50 A 70 70 0 0 1 -10,-60 Z" fill="url(#lollipop-fov-grad)" pointer-events="none" />
       <circle cx="0" cy="0" r="13" fill="#0f172a" stroke="#f43f5e" stroke-width="2" />
       <circle cx="0" cy="0" r="5" fill="#f43f5e" />
       <!-- 棒棒糖彎柄 -->
       <path d="M 0 13 Q 6 20 0 26" fill="none" stroke="#f43f5e" stroke-width="2.5" />
-      <text x="0" y="36" fill="#fda4af" font-family="sans-serif" font-size="8.5" font-weight="bold" text-anchor="middle">Lollipop (樺)</text>
+      <text x="0" y="38" fill="#fda4af" font-family="sans-serif" font-size="11" font-weight="bold" text-anchor="middle">Lollipop (樺)</text>
     </g>
 
-    <!-- 6.10 儲藏室：米家掃拖機器人 1 代 (vacuum.xiaomi_vacuum_v1) -->
-    <g id="vacuum.xiaomi_vacuum_v1" class="ha-entity vacuum-docked" data-device="roborock_vacuum" transform="translate(680, 595)">
+    <!-- 6.10 儲藏室：米家掃拖機器人 1 代 (對齊 ID vacuum.rockrobo_v1_6536_robot_cleaner 與電量 sensor) -->
+    <g id="vacuum.rockrobo_v1_6536_robot_cleaner" class="ha-entity vacuum-docked" data-device="roborock_vacuum" transform="translate(680, 595)">
       <!-- 充電底座 -->
       <rect x="-18" y="-14" width="36" height="8" rx="2" fill="#334155" />
       <!-- 機器人圓形機身與 LDS 雷射 -->
       <circle cx="0" cy="0" r="14" fill="#1e293b" stroke="#a3e635" stroke-width="2" />
       <circle cx="0" cy="0" r="4.5" fill="#a3e635" />
-      <text x="32" y="4" fill="#a3e635" font-family="sans-serif" font-size="9" font-weight="bold">100%</text>
+      <text id="sensor.rockrobo_v1_6536_battery_level" x="34" y="4" fill="#a3e635" font-family="sans-serif" font-size="11" font-weight="bold">100%</text>
     </g>
   </g>
 
@@ -422,40 +422,40 @@
     <text x="640" y="580" fill="#64748b" font-family="sans-serif" font-size="10" text-anchor="middle">儲藏室</text>
   </g>
 
-  <!-- ==================== 8. 水電+弱電圖表與說明框 (右側緊湊說明) ==================== -->
-  <g id="layer-legend" inkscape:groupmode="layer" inkscape:label="08_Legend" transform="translate(850, 480)">
-    <rect x="0" y="0" width="130" height="185" rx="8" fill="#0f172a" stroke="#334155" stroke-width="1.2" opacity="0.9" />
-    <text x="65" y="18" fill="#e2e8f0" font-family="sans-serif" font-size="10" font-weight="bold" text-anchor="middle">2.5D 切牆圖例</text>
-    <line x1="8" y1="26" x2="122" y2="26" stroke="#1e293b" stroke-width="1" />
+  <!-- ==================== 8. 水電+弱電圖表與說明框 (右側緊湊說明 - 已優化邊距與無障礙字級) ==================== -->
+  <g id="layer-legend" inkscape:groupmode="layer" inkscape:label="08_Legend" transform="translate(845, 465)">
+    <rect x="0" y="0" width="135" height="195" rx="8" fill="#0f172a" stroke="#334155" stroke-width="1.2" opacity="0.95" />
+    <text x="67" y="19" fill="#e2e8f0" font-family="sans-serif" font-size="11" font-weight="bold" text-anchor="middle">2.5D 切牆圖例</text>
+    <line x1="8" y1="27" x2="127" y2="27" stroke="#1e293b" stroke-width="1" />
     
-    <!-- 圖例項目 -->
-    <g transform="translate(12, 42)">
+    <!-- 圖例項目 (全面升級 10.5px 無障礙清晰文字) -->
+    <g transform="translate(12, 44)">
       <rect x="0" y="-8" width="14" height="6" fill="url(#wall-top-cut)" stroke="#94a3b8" stroke-width="0.5" />
-      <text x="22" y="-3" fill="#cbd5e1" font-family="sans-serif" font-size="9">透視矮切牆</text>
+      <text x="22" y="-2" fill="#e2e8f0" font-family="sans-serif" font-size="10.5" font-weight="500">透視矮切牆</text>
     </g>
-    <g transform="translate(12, 64)">
+    <g transform="translate(12, 67)">
       <circle cx="7" cy="-5" r="5" fill="#38bdf8" />
-      <text x="22" y="-2" fill="#cbd5e1" font-family="sans-serif" font-size="9">C400 右下角</text>
+      <text x="22" y="-1" fill="#e2e8f0" font-family="sans-serif" font-size="10.5" font-weight="500">C400 右下角</text>
     </g>
-    <g transform="translate(12, 86)">
+    <g transform="translate(12, 90)">
       <circle cx="7" cy="-5" r="5" fill="#f59e0b" />
-      <text x="22" y="-2" fill="#cbd5e1" font-family="sans-serif" font-size="9">小愛音箱 (書房)</text>
+      <text x="22" y="-1" fill="#fef08a" font-family="sans-serif" font-size="10.5" font-weight="bold">小愛音箱 (書房)</text>
     </g>
-    <g transform="translate(12, 108)">
+    <g transform="translate(12, 113)">
       <rect x="0" y="-10" width="14" height="10" rx="2" fill="#10b981" />
-      <text x="22" y="-2" fill="#cbd5e1" font-family="sans-serif" font-size="9">Pi4 中樞 (書房)</text>
+      <text x="22" y="-1" fill="#a7f3d0" font-family="sans-serif" font-size="10.5" font-weight="500">Pi4 中樞 (書房)</text>
     </g>
-    <g transform="translate(12, 130)">
+    <g transform="translate(12, 136)">
       <circle cx="7" cy="-5" r="5" fill="#f43f5e" />
-      <text x="22" y="-2" fill="#cbd5e1" font-family="sans-serif" font-size="9">Lollipop (樺)</text>
+      <text x="22" y="-1" fill="#fda4af" font-family="sans-serif" font-size="10.5" font-weight="500">Lollipop (樺)</text>
     </g>
-    <g transform="translate(12, 152)">
+    <g transform="translate(12, 159)">
       <circle cx="7" cy="-5" r="5" fill="#a3e635" />
-      <text x="22" y="-2" fill="#cbd5e1" font-family="sans-serif" font-size="9">掃拖機器人</text>
+      <text x="22" y="-1" fill="#bef264" font-family="sans-serif" font-size="10.5" font-weight="500">掃拖機器人</text>
     </g>
-    <g transform="translate(12, 172)">
-      <circle cx="7" cy="-5" r="4" fill="#38bdf8" opacity="0.4" />
-      <text x="22" y="-2" fill="#38bdf8" font-family="sans-serif" font-size="8.5">點擊設備可控</text>
+    <g transform="translate(12, 180)">
+      <circle cx="7" cy="-5" r="4" fill="#38bdf8" opacity="0.6" />
+      <text x="22" y="-1" fill="#38bdf8" font-family="sans-serif" font-size="10" font-weight="bold">點擊設備可控</text>
     </g>
   </g>
 

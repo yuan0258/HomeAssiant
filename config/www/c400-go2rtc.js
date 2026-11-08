@@ -500,6 +500,14 @@ class IotFloorplanTopologyCard extends HTMLElement {
     this._initialized = false;
     this._lastModalStateSig = "";
     this._webSshOpen = false;
+    this._abortController = null;
+  }
+
+  disconnectedCallback() {
+    if (this._abortController) {
+      this._abortController.abort();
+      this._abortController = null;
+    }
   }
 
   _getModalStateSig(devKey) {
@@ -632,8 +640,8 @@ class IotFloorplanTopologyCard extends HTMLElement {
   async _loadFloorplanSvg() {
     try {
       const [svgRes, cssRes] = await Promise.all([
-        fetch("/local/floorplan/floorplan.svg?v=27", { cache: "no-cache" }),
-        fetch("/local/floorplan/floorplan.css?v=27", { cache: "no-cache" }),
+        fetch("/local/floorplan/floorplan.svg?v=28", { cache: "no-cache" }),
+        fetch("/local/floorplan/floorplan.css?v=28", { cache: "no-cache" }),
       ]);
       const svgText = await svgRes.text();
       const cssText = await cssRes.text();
@@ -656,6 +664,12 @@ class IotFloorplanTopologyCard extends HTMLElement {
     const svg = fpContainer.querySelector("svg");
     if (!svg) return;
 
+    if (this._abortController) {
+      this._abortController.abort();
+    }
+    this._abortController = new AbortController();
+    const { signal } = this._abortController;
+
     const interactiveEls = svg.querySelectorAll("[data-device]");
     interactiveEls.forEach((el) => {
       const devKey = el.getAttribute("data-device");
@@ -663,15 +677,32 @@ class IotFloorplanTopologyCard extends HTMLElement {
 
       el.addEventListener("mouseenter", () => {
         this._setHoverDevice(devKey);
-      });
+      }, { signal });
       el.addEventListener("mouseleave", () => {
         this._setHoverDevice(null);
-      });
+      }, { signal });
       el.addEventListener("click", (ev) => {
         ev.stopPropagation();
         this._openDeviceModal(devKey);
-      });
+      }, { signal });
     });
+
+    // 解決 ISSUE #102: 觸控/點擊空白處重置高亮，杜絕行動端 Sticky Hover 黏滯
+    svg.addEventListener("click", (ev) => {
+      if (!ev.target.closest("[data-device]")) {
+        this._setHoverDevice(null);
+      }
+    }, { signal });
+
+    svg.addEventListener("mouseleave", () => {
+      this._setHoverDevice(null);
+    }, { signal });
+
+    fpContainer.addEventListener("pointerdown", (ev) => {
+      if (!ev.target.closest("[data-device]")) {
+        this._setHoverDevice(null);
+      }
+    }, { signal });
   }
 
   _setHoverDevice(devKey) {
@@ -732,8 +763,33 @@ class IotFloorplanTopologyCard extends HTMLElement {
     const svg = fpContainer.querySelector("svg");
     if (!svg) return;
 
+    // 解決 ISSUE #101: 建立嚴格雙向別名映射表，確保 WebSocket 與 SVG 狀態 100% 同步
+    const ID_ALIASES = {
+      "media_player.sony_km_55x85k_2": ["media_player.sony_km_55x85k_2", "media_player.sony_55x85k"],
+      "media_player.monitor_samsung_m7_32": ["media_player.monitor_samsung_m7_32", "media_player.samsung_m7"],
+      "media_player.xiaomi_lx01_d7ab_play_control": ["media_player.xiaomi_lx01_d7ab_play_control", "media_player.xiaoai_mini_study"],
+      "vacuum.rockrobo_v1_6536_robot_cleaner": ["vacuum.rockrobo_v1_6536_robot_cleaner", "vacuum.xiaomi_vacuum_v1"],
+      "sensor.rockrobo_v1_6536_battery_level": ["sensor.rockrobo_v1_6536_battery_level", "svg-vacuum-battery"],
+      "camera.chuangmi_039c04_c643_camera_control": ["camera.chuangmi_039c04_c643_camera_control", "camera.c400_camera_stream"],
+      "camera.lollipop_baby_camera": ["camera.lollipop_baby_camera", "camera.study_lollipop_stream"],
+      "media_player.wo_shi_wo_shi": ["media_player.wo_shi_wo_shi", "media_player.homepod_mini_xiao_hai_fang"]
+    };
+
+    const getSvgEl = (id) => {
+      let el = svg.getElementById(id);
+      if (el) return el;
+      const aliases = ID_ALIASES[id];
+      if (aliases) {
+        for (const alias of aliases) {
+          el = svg.getElementById(alias);
+          if (el) return el;
+        }
+      }
+      return null;
+    };
+
     const setElClass = (id, clsList, removePrefix = []) => {
-      const el = svg.getElementById(id);
+      const el = getSvgEl(id);
       if (!el) return;
       removePrefix.forEach((p) => {
         Array.from(el.classList).forEach((c) => {
@@ -744,7 +800,7 @@ class IotFloorplanTopologyCard extends HTMLElement {
     };
 
     const setElText = (id, text) => {
-      const el = svg.getElementById(id);
+      const el = getSvgEl(id);
       if (el) el.textContent = text;
     };
 
@@ -801,7 +857,7 @@ class IotFloorplanTopologyCard extends HTMLElement {
       camSwitch === "on" ? "camera-on" : "camera-off",
       ["camera-"]
     );
-    const fovEl = svg.getElementById("camera-fov-cone");
+    const fovEl = svg.getElementById("camera-fov-cone") || svg.getElementById("c400-iso-fov");
     if (fovEl) fovEl.style.opacity = camSwitch === "on" ? "1" : "0.15";
 
     const motionState = this._getState("switch.chuangmi_039c04_c643_motion_detection", "off");
