@@ -158,7 +158,7 @@
 
 .c400-fov-beam {
   animation: sweepAngle 3.5s ease-in-out infinite;
-  transform-origin: 772px 460px;
+  transform-origin: 812px 515px;
 }
 
 @keyframes pulseGlow {
