@@ -204,14 +204,14 @@ const DEVICE_CATALOG = {
   pi4_hub: {
     id: "pi4_hub",
     icon: "🍓",
-    name: "智慧家庭中樞：樹莓派 4 (Raspberry Pi 4)",
-    room: "孝親房 / 核心中控",
+    name: "智慧家庭中樞：樹莓派 4 (Raspberry Pi 4 / 書房)",
+    room: "書房 Study / 核心中控",
     ip: "192.168.31.212 • TS: 100.113.142.12",
     connType: "核心中控伺服器",
     model: "Raspberry Pi 4 Model B",
     deviceId: "d477379a0f476cc653d901db9fd87102",
     primaryEntity: "sensor.system_monitor_processor_temperature",
-    description: "運行 Home Assistant (8123)、go2rtc 2.5K 串流引擎 (1984/8554)、HomeKit Bridge (21063/21064/21065) 與藍牙 BLE 閘道 (hci0)。",
+    description: "運行於書房核心工作區，運行 Home Assistant (8123)、go2rtc 2.5K 串流引擎 (1984/8554)、HomeKit Bridge (21063/21064/21065) 與藍牙 BLE 閘道 (hci0)。",
     entities: [
       "sensor.system_monitor_processor_temperature",
       "sensor.system_monitor_processor_use",
@@ -375,14 +375,14 @@ const DEVICE_CATALOG = {
   xiaoai_mini: {
     id: "xiaoai_mini",
     icon: "🔊",
-    name: "小愛音箱 mini (主臥室)",
-    room: "主臥室 Master Bedroom",
+    name: "小愛音箱 mini (書房)",
+    room: "書房 Study",
     ip: "192.168.31.129 (MAC: 7C:49:EB:68:D7:AB)",
     connType: "Xiaomi Miot 區網/雲端整合 (DID: 88793664)",
     model: "xiaomi.wifispeaker.lx01 • 韌體: v1.48.4",
     deviceId: "ba2bf73b34d9e9086b9742084d5e680d",
     primaryEntity: "media_player.xiaomi_lx01_d7ab_play_control",
-    description: "主臥室小愛音箱 mini（小愛同學），支援米家語音助理、TTS 智慧文字語音播報、米家文字指令執行、媒體播放控制、停止鬧鐘與喚醒互動。",
+    description: "書房工作區小愛音箱 mini（小愛同學），支援米家語音助理、TTS 智慧文字語音播報、米家文字指令執行、媒體播放控制、停止鬧鐘與喚醒互動。",
     entities: [
       "media_player.xiaomi_lx01_d7ab_play_control",
       "text.xiaomi_lx01_d7ab_play_text",
@@ -632,8 +632,8 @@ class IotFloorplanTopologyCard extends HTMLElement {
   async _loadFloorplanSvg() {
     try {
       const [svgRes, cssRes] = await Promise.all([
-        fetch("/local/floorplan/floorplan.svg?v=23", { cache: "no-cache" }),
-        fetch("/local/floorplan/floorplan.css?v=23", { cache: "no-cache" }),
+        fetch("/local/floorplan/floorplan.svg?v=24", { cache: "no-cache" }),
+        fetch("/local/floorplan/floorplan.css?v=24", { cache: "no-cache" }),
       ]);
       const svgText = await svgRes.text();
       const cssText = await cssRes.text();
@@ -689,14 +689,14 @@ class IotFloorplanTopologyCard extends HTMLElement {
           bedside_lamp: "area.bedroom_northwest",
           homepod_mini: "area.bedroom_northwest",
           xiaomi_router: "area.bedroom_southwest",
-          pi4_hub: "area.bedroom_southwest",
+          pi4_hub: "area.study_room",
           c400_camera: "area.living_dining",
           ble_clock: "area.living_dining",
           sony_tv: "area.living_dining",
           samsung_m7: "area.study_room",
           lollipop_camera: "area.study_room",
           roborock_vacuum: "area.storage",
-          xiaoai_mini: "area.bedroom_master",
+          xiaoai_mini: "area.study_room",
           room_master: "area.bedroom_master",
           room_kitchen: "area.kitchen",
           room_bath_guest: "area.bathroom_guest",
@@ -2393,9 +2393,9 @@ class IotFloorplanTopologyCard extends HTMLElement {
               <div class="topo-node-left">
                 <span class="topo-icon">🍓</span>
                 <div>
-                  <div class="topo-title">智慧家庭中樞：樹莓派 4 (Raspberry Pi 4)</div>
+                  <div class="topo-title">智慧家庭中樞：樹莓派 4 (Raspberry Pi 4 / 書房)</div>
                   <div class="topo-sub">
-                    區網 IP: <span class="mono">192.168.31.212</span> • Tailscale: <span class="mono">100.113.142.12</span><br>
+                    位置：<span class="mono">書房 Study</span> • 區網 IP: <span class="mono">192.168.31.212</span> • TS: <span class="mono">100.113.142.12</span><br>
                     服務：Home Assistant (8123) + go2rtc (8554) + WebSSH (7681) + 藍牙 (hci0)
                   </div>
                 </div>
@@ -2497,7 +2497,7 @@ class IotFloorplanTopologyCard extends HTMLElement {
                 <div class="topo-node-left">
                   <span class="topo-icon">🔊</span>
                   <div>
-                    <div class="topo-title">小愛音箱 mini (主臥室)</div>
+                    <div class="topo-title">小愛音箱 mini (書房)</div>
                     <div class="topo-sub mono">192.168.31.129 • DID: 88793664</div>
                   </div>
                 </div>

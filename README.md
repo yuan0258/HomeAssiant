@@ -60,16 +60,16 @@
 
 | 空間 | 設備名稱 | IP / 識別碼 | 連線方式 | 核心實體 (`entity_id`) |
 | :--- | :--- | :--- | :--- | :--- |
-| **孝親房** | 🍓 樹莓派 4 智慧中樞 | `192.168.31.212` (`TS: 100.113.142.12`) | Wi-Fi + Tailscale | `sensor.system_monitor_processor_temperature` |
 | **孝親房** | 🛜 Xiaomi 路由器 BE3600 (`RN06`) | `192.168.31.1` (`44:F7:70:70:27:24`) | WAN / LAN 閘道 | `sensor.xiaomi_rn06_2724_connected_device_number` |
+| **書房** | 🍓 樹莓派 4 智慧中樞 | `192.168.31.212` (`TS: 100.113.142.12`) | Wi-Fi + Tailscale | `sensor.system_monitor_processor_temperature` |
+| **書房** | 🖥️ Samsung M7 32吋智慧螢幕 | `192.168.31.97` | 區網直連 (Tizen / DLNA) | `media_player.monitor_samsung_m7_32` |
+| **書房** | 🍼 Lollipop 嬰兒攝影機 (樺) | `192.168.31.102` (`10:D0:7A:B4:A7:D4`) | go2rtc RTSP 直連 (`554`) | `camera.lollipop_baby_camera` |
+| **書房** | 🔊 小愛音箱 mini (小愛同學) | `192.168.31.129` (`7C:49:EB:68:D7:AB`) | Xiaomi Miot 整合 (`lx01`) | `media_player.xiaomi_lx01_d7ab_play_control` |
 | **客廳** | 📹 小米智慧攝影機 C400 | `192.168.31.104` | go2rtc 2.5K RTSP 直連 | `camera.chuangmi_039c04_c643_camera_control` |
 | **客廳** | 🌡️ 小米電子溫濕度時鐘 | `BLE: A4:C1:38:9D:F5:76` | 藍牙 BLE 連 Pi 4 (`hci0`) | `sensor.miaomiaoce_o2_f576_temperature` |
 | **客廳** | 📺 Sony 55吋 4K 智慧電視 (`55X85K`) | `192.168.31.15` | 區網直連 (Android TV) | `media_player.55x85k` |
 | **小孩房** | 🔊 Apple HomePod Mini | `192.168.31.229` | HomeKit 中樞 | `media_player.wo_shi` |
 | **小孩房** | 💡 米家床頭燈 2 | `192.168.31.143` | 區網直連 + 藍牙網關 | `light.yeelink_bslamp2_2a87_light` |
-| **書房** | 🖥️ Samsung M7 32吋智慧螢幕 | `192.168.31.97` | 區網直連 (Tizen / DLNA) | `media_player.monitor_samsung_m7_32` |
-| **書房** | 🍼 Lollipop 嬰兒攝影機 (樺) | `192.168.31.102` (`10:D0:7A:B4:A7:D4`) | go2rtc RTSP 直連 (`554`) | `camera.lollipop_baby_camera` |
-| **主臥室** | 🔊 小愛音箱 mini (小愛同學) | `192.168.31.129` (`7C:49:EB:68:D7:AB`) | Xiaomi Miot 整合 (`lx01`) | `media_player.xiaomi_lx01_d7ab_play_control` |
 | **儲藏室** | 🤖 米家掃地機器人 (1代) | `192.168.31.240` | Xiaomi Miot Cloud Bridge | `vacuum.rockrobo_v1_6536_robot_cleaner` |
 
 ---

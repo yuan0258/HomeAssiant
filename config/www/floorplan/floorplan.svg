@@ -340,19 +340,12 @@
       <text x="272" y="250" fill="#c084fc" font-family="sans-serif" font-size="9.5" font-weight="bold" text-anchor="middle" pointer-events="none">HomePod</text>
     </g>
 
-    <!-- ② 孝親房：小米 WiFi 7 路由器 + 樹莓派 4 中樞 -->
+    <!-- ② 孝親房：Xiaomi 路由器 BE3600 (RN06) -->
     <g id="sensor.xiaomi_rn06_2724_connected_device_number" class="ha-entity ha-router" data-device="xiaomi_router">
-      <rect x="165" y="402" width="88" height="34" rx="8" fill="#0f172a" stroke="#3b82f6" stroke-width="1.8" />
-      <text x="181" y="424" font-size="14" text-anchor="middle" pointer-events="none">🛜</text>
-      <text x="219" y="416" fill="#60a5fa" font-family="sans-serif" font-size="9.5" font-weight="bold" text-anchor="middle" pointer-events="none">WiFi 7</text>
-      <text id="svg-router-status" x="219" y="429" fill="#94a3b8" font-family="monospace" font-size="8.5" text-anchor="middle" pointer-events="none">31.1</text>
-    </g>
-
-    <g id="sensor.system_monitor_processor_temperature" class="ha-entity ha-pi4" data-device="pi4_hub">
-      <rect x="260" y="402" width="88" height="34" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1.8" />
-      <text x="276" y="424" font-size="14" text-anchor="middle" pointer-events="none">🍓</text>
-      <text x="314" y="416" fill="#34d399" font-family="sans-serif" font-size="9.5" font-weight="bold" text-anchor="middle" pointer-events="none">Pi4 中樞</text>
-      <text id="svg-pi4-status" x="314" y="429" fill="#94a3b8" font-family="monospace" font-size="8.5" text-anchor="middle" pointer-events="none">31.212</text>
+      <rect x="200" y="402" width="110" height="34" rx="8" fill="#0f172a" stroke="#3b82f6" stroke-width="1.8" />
+      <text x="218" y="424" font-size="14" text-anchor="middle" pointer-events="none">🛜</text>
+      <text x="264" y="416" fill="#60a5fa" font-family="sans-serif" font-size="9.5" font-weight="bold" text-anchor="middle" pointer-events="none">WiFi 7 路由器</text>
+      <text id="svg-router-status" x="264" y="429" fill="#94a3b8" font-family="monospace" font-size="8.5" text-anchor="middle" pointer-events="none">31.1</text>
     </g>
 
     <!-- ③ 客廳：C400 攝影機 (含可視角錐形) + 溫濕度時鐘 + Sony 55X85K 電視 -->
@@ -392,9 +385,10 @@
       <text id="sensor.rockrobo_v1_6536_battery_level" class="ha-entity ha-battery" data-device="roborock_vacuum" x="707" y="553" fill="#a3e635" font-family="monospace" font-size="12" font-weight="bold" text-anchor="middle">🔋99%</text>
     </g>
 
-    <!-- ⑤ 書房：Samsung M7 32" 智慧螢幕 + Lollipop 嬰兒攝影機 (樺) -->
+    <!-- ⑤ 書房：Samsung M7 32" + Lollipop 嬰兒攝影機 (樺) + 樹莓派 4 中樞 + 小愛音箱 mini -->
     <path id="lollipop-fov-cone" d="M 392,714 L 278,682 A 120,120 0 0,1 368,602 Z" fill="url(#lollipop-fov-grad)" pointer-events="none" />
 
+    <!-- 書桌螢幕：Samsung M7 32" -->
     <g id="media_player.monitor_samsung_m7_32" class="ha-entity ha-monitor" data-device="samsung_m7">
       <rect x="292" y="626" width="64" height="38" rx="4" fill="#1e293b" stroke="#38bdf8" stroke-width="2" />
       <rect x="297" y="631" width="54" height="28" rx="2" fill="#0f172a" class="screen" />
@@ -403,19 +397,28 @@
       <text x="324" y="649" font-size="11" fill="#e2e8f0" font-family="monospace" font-weight="bold" text-anchor="middle" pointer-events="none">M7 32"</text>
     </g>
 
+    <!-- 書桌右側：小愛音箱 mini -->
+    <g id="media_player.xiaomi_lx01_d7ab_play_control" class="ha-entity ha-xiaoai" data-device="xiaoai_mini">
+      <circle cx="396" cy="626" r="15" fill="#1e293b" stroke="#f97316" stroke-width="2.2" />
+      <text x="396" y="631" font-size="13" text-anchor="middle" pointer-events="none">🔊</text>
+      <text x="396" y="652" fill="#fdba74" font-family="sans-serif" font-size="9" font-weight="bold" text-anchor="middle" pointer-events="none">小愛 mini</text>
+    </g>
+
+    <!-- 書房左下：樹莓派 4 智慧家庭中樞 -->
+    <g id="sensor.system_monitor_processor_temperature" class="ha-entity ha-pi4" data-device="pi4_hub">
+      <rect x="272" y="700" width="86" height="34" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1.8" />
+      <text x="288" y="722" font-size="14" text-anchor="middle" pointer-events="none">🍓</text>
+      <text x="325" y="714" fill="#34d399" font-family="sans-serif" font-size="9.5" font-weight="bold" text-anchor="middle" pointer-events="none">Pi4 中樞</text>
+      <text id="svg-pi4-status" x="325" y="727" fill="#94a3b8" font-family="monospace" font-size="8.5" text-anchor="middle" pointer-events="none">31.212</text>
+    </g>
+
+    <!-- 書房右下：Lollipop 嬰兒攝影機 (樺) -->
     <g id="camera.lollipop_baby_camera" class="ha-entity ha-camera" data-device="lollipop_camera">
       <circle cx="392" cy="714" r="16" fill="#1e293b" stroke="#f472b6" stroke-width="2.2" />
       <text x="392" y="719" font-size="14" text-anchor="middle" pointer-events="none">🍼</text>
       <text x="392" y="742" fill="#f9a8d4" font-family="sans-serif" font-size="9.5" font-weight="bold" text-anchor="middle" pointer-events="none">Lollipop (樺)</text>
     </g>
     <circle id="lollipop-cry-indicator" class="ha-entity ha-cam-motion cam-motion-on" data-device="lollipop_camera" cx="405" cy="701" r="4.5" fill="#f472b6" />
-
-    <!-- ⑥ 主臥室：小愛音箱 mini (media_player.xiaomi_lx01_d7ab_play_control) -->
-    <g id="media_player.xiaomi_lx01_d7ab_play_control" class="ha-entity ha-xiaoai" data-device="xiaoai_mini">
-      <circle cx="622" cy="130" r="16" fill="#1e293b" stroke="#f97316" stroke-width="2.2" />
-      <text x="622" y="135" font-size="14" text-anchor="middle" pointer-events="none">🔊</text>
-      <text x="622" y="158" fill="#fdba74" font-family="sans-serif" font-size="9.5" font-weight="bold" text-anchor="middle" pointer-events="none">小愛 mini</text>
-    </g>
 
   </g>
 </svg>
