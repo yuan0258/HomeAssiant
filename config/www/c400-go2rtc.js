@@ -632,8 +632,8 @@ class IotFloorplanTopologyCard extends HTMLElement {
   async _loadFloorplanSvg() {
     try {
       const [svgRes, cssRes] = await Promise.all([
-        fetch("/local/floorplan/floorplan.svg?v=22", { cache: "no-cache" }),
-        fetch("/local/floorplan/floorplan.css?v=22", { cache: "no-cache" }),
+        fetch("/local/floorplan/floorplan.svg?v=23", { cache: "no-cache" }),
+        fetch("/local/floorplan/floorplan.css?v=23", { cache: "no-cache" }),
       ]);
       const svgText = await svgRes.text();
       const cssText = await cssRes.text();
@@ -845,8 +845,15 @@ class IotFloorplanTopologyCard extends HTMLElement {
 
     // 8. XiaoAi Mini (Master Bedroom)
     const xaState = this._getState("media_player.xiaomi_lx01_d7ab_play_control", "off");
-    const xaPlaying = xaState === "playing";
-    setElClass("media_player.xiaomi_lx01_d7ab_play_control", xaPlaying ? "xiaoai-playing" : "", ["xiaoai-"]);
+    const xaVolErr = String(this._getAttr("media_player.xiaomi_lx01_d7ab_play_control", "speaker.volume.error", ""));
+    const xaPlayErr = String(this._getAttr("media_player.xiaomi_lx01_d7ab_play_control", "play_control.playing_state.error", ""));
+    const xaOffline = ["unavailable", "unknown", "off"].includes(xaState) || xaVolErr.includes("offline") || xaPlayErr.includes("offline");
+
+    if (xaOffline) {
+      setElClass("media_player.xiaomi_lx01_d7ab_play_control", "entity-unavailable", ["xiaoai-"]);
+    } else {
+      setElClass("media_player.xiaomi_lx01_d7ab_play_control", xaState === "playing" ? "xiaoai-playing" : "", ["xiaoai-", "entity-unavailable"]);
+    }
 
     // 8. Lollipop Baby Camera (Study)
     setElClass("camera.lollipop_baby_camera", "camera-on", ["camera-"]);
@@ -918,12 +925,20 @@ class IotFloorplanTopologyCard extends HTMLElement {
     setBadge("badge-lollipop", "🟢 go2rtc 直連 (串流中)", "pill-emerald");
 
     const xaState = this._getState("media_player.xiaomi_lx01_d7ab_play_control", "off");
-    const xaVol = Math.round((parseFloat(this._getAttr("media_player.xiaomi_lx01_d7ab_play_control", "volume_level", 0.36)) || 0.36) * 100);
-    setBadge(
-      "badge-xiaoai",
-      xaState === "playing" ? `🎵 播放中 • 音量 ${xaVol}%` : `🟢 在線 • 音量 ${xaVol}%`,
-      xaState === "playing" ? "pill-emerald" : "pill-amber"
-    );
+    const xaVolErr = String(this._getAttr("media_player.xiaomi_lx01_d7ab_play_control", "speaker.volume.error", ""));
+    const xaPlayErr = String(this._getAttr("media_player.xiaomi_lx01_d7ab_play_control", "play_control.playing_state.error", ""));
+    const xaOffline = ["unavailable", "unknown", "off"].includes(xaState) || xaVolErr.includes("offline") || xaPlayErr.includes("offline");
+
+    if (xaOffline) {
+      setBadge("badge-xiaoai", "⚪ 離線待機 (已斷電)", "pill-muted");
+    } else {
+      const xaVol = Math.round((parseFloat(this._getAttr("media_player.xiaomi_lx01_d7ab_play_control", "volume_level", 0.36)) || 0.36) * 100);
+      setBadge(
+        "badge-xiaoai",
+        xaState === "playing" ? `🎵 播放中 • 音量 ${xaVol}%` : `🟢 在線 • 音量 ${xaVol}%`,
+        xaState === "playing" ? "pill-emerald" : "pill-amber"
+      );
+    }
 
     const vacBat = this._getState("sensor.rockrobo_v1_6536_battery_level", "100");
     const vacStatus = this._getState("vacuum.rockrobo_v1_6536_robot_cleaner", "docked");
@@ -1461,12 +1476,21 @@ class IotFloorplanTopologyCard extends HTMLElement {
     } else if (devKey === "xiaoai_mini") {
       const mainEntity = dev.primaryEntity;
       const st = this._getState(mainEntity, "idle");
+      const volErr = String(this._getAttr(mainEntity, "speaker.volume.error", ""));
+      const isOffline = ["unavailable", "unknown", "off"].includes(st) || volErr.includes("offline");
       const volRaw = this._getAttr(mainEntity, "volume_level", 0.36);
       const volPct = Math.round((parseFloat(volRaw) || 0.36) * 100);
       const isMuted = this._getAttr(mainEntity, "is_volume_muted", false);
+      const offlineWarning = isOffline ? `
+        <div style="background:rgba(239,68,68,0.18);border:1px solid rgba(239,68,68,0.5);border-radius:10px;padding:10px 14px;margin-bottom:12px;color:#fca5a5;font-size:12.5px;display:flex;align-items:center;gap:10px;">
+          <span style="font-size:18px;">⚠️</span>
+          <div><b>小愛音箱目前處於離線狀態 (Device offline)</b><br><small style="color:#cbd5e1;">設備目前拔除電源或未連接 Wi-Fi，在線功能將於插上電源連線後自動恢復。</small></div>
+        </div>
+      ` : "";
       controlsHtml = `
         <div class="modal-section">
-          <div class="section-title">🔊 小愛音箱 mini 媒體播放與語音控制 (狀態: ${st} • 音量: ${volPct}%)</div>
+          ${offlineWarning}
+          <div class="section-title">🔊 小愛音箱 mini 媒體播放與語音控制 (狀態: ${isOffline ? "⚪ 離線中" : "🟢 在線"} • 音量: ${volPct}%)</div>
           <div class="control-grid">
             <button class="ctrl-btn active-emerald" data-action="media-cmd" data-entity="${mainEntity}" data-cmd="media_play_pause">
               <span>⏯️ 播放 / 暫停</span>

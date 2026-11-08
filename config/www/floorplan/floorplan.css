@@ -124,7 +124,14 @@
 }
 
 /* 離線 */
-.entity-unavailable { opacity: .55 !important; }
+.entity-unavailable {
+  opacity: 0.45 !important;
+  filter: grayscale(100%) !important;
+}
+.entity-unavailable circle {
+  stroke: #64748b !important;
+  fill: #1e293b !important;
+}
 
 /* ---------- 6. 小愛音箱 mini (主臥室) ---------- */
 .ha-xiaoai circle {
