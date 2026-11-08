@@ -148,3 +148,32 @@
   stroke: #fb923c !important;
 }
 
+
+/* ---------- 7. 2.5D 斜角切牆與 C400 視角雷達動態樣式 ---------- */
+@keyframes sweepAngle {
+  0% { opacity: 0.35; transform: scale(0.98); }
+  50% { opacity: 0.65; transform: scale(1.02); }
+  100% { opacity: 0.35; transform: scale(0.98); }
+}
+
+.c400-fov-beam {
+  animation: sweepAngle 3.5s ease-in-out infinite;
+  transform-origin: 772px 460px;
+}
+
+@keyframes pulseGlow {
+  0%, 100% { filter: drop-shadow(0 0 3px #38bdf8); }
+  50% { filter: drop-shadow(0 0 10px #38bdf8); }
+}
+
+.device-active {
+  animation: pulseGlow 2.5s infinite;
+}
+
+.wood-floor {
+  filter: contrast(1.05) brightness(0.96);
+}
+
+.tile-floor {
+  filter: contrast(1.02) brightness(0.92);
+}

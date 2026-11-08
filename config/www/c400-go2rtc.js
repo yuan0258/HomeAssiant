@@ -632,8 +632,8 @@ class IotFloorplanTopologyCard extends HTMLElement {
   async _loadFloorplanSvg() {
     try {
       const [svgRes, cssRes] = await Promise.all([
-        fetch("/local/floorplan/floorplan.svg?v=25", { cache: "no-cache" }),
-        fetch("/local/floorplan/floorplan.css?v=25", { cache: "no-cache" }),
+        fetch("/local/floorplan/floorplan.svg?v=26", { cache: "no-cache" }),
+        fetch("/local/floorplan/floorplan.css?v=26", { cache: "no-cache" }),
       ]);
       const svgText = await svgRes.text();
       const cssText = await cssRes.text();
